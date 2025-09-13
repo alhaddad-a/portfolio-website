@@ -9,9 +9,9 @@ This is the backend API for the portfolio website contact form.
 npm install
 ```
 
-2. Copy the environment file and configure:
+2. Create the environment file:
 ```bash
-cp env.example .env
+touch .env
 ```
 
 3. Update the `.env` file with your email credentials:

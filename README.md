@@ -64,9 +64,9 @@ cd backend
 npm install
 ```
 
-3. Configure environment variables:
+3. Create environment file:
 ```bash
-cp env.example .env
+touch .env
 ```
 
 4. Update `.env` with your email credentials:

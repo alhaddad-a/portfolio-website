@@ -6,14 +6,17 @@ const WhatsAppButton: React.FC = () => {
 
   useEffect(() => {
     const toggleVisibility = () => {
-      // Show button after scrolling 300px
-      if (window.pageYOffset > 300) {
+      // Show button after scrolling 200px (reduced for better visibility)
+      if (window.pageYOffset > 200) {
         setIsVisible(true)
       } else {
         setIsVisible(false)
       }
     }
 
+    // Show button after scrolling 200px
+    toggleVisibility()
+    
     window.addEventListener('scroll', toggleVisibility)
     return () => window.removeEventListener('scroll', toggleVisibility)
   }, [])
@@ -33,13 +36,13 @@ const WhatsAppButton: React.FC = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0 }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="fixed bottom-6 right-6 z-50"
+          className="fixed bottom-6 right-6 z-[9999]"
         >
           <motion.button
             onClick={handleWhatsAppClick}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
-            className="group relative bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+            className="group relative bg-green-500 hover:bg-green-600 text-white p-3 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 border-2 border-white"
             aria-label="Contact via WhatsApp"
           >
             {/* WhatsApp Icon */}
@@ -53,14 +56,10 @@ const WhatsAppButton: React.FC = () => {
             </svg>
 
             {/* Tooltip */}
-            <motion.div
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-            >
+            <div className="absolute right-full mr-3 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
               Chat on WhatsApp
               <div className="absolute left-full top-1/2 transform -translate-y-1/2 border-4 border-transparent border-l-gray-900"></div>
-            </motion.div>
+            </div>
 
             {/* Pulse animation */}
             <motion.div

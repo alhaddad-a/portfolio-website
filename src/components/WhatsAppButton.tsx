@@ -5,20 +5,8 @@ const WhatsAppButton: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    const toggleVisibility = () => {
-      // Show button after scrolling 200px (reduced for better visibility)
-      if (window.pageYOffset > 200) {
-        setIsVisible(true)
-      } else {
-        setIsVisible(false)
-      }
-    }
-
-    // Show button after scrolling 200px
-    toggleVisibility()
-    
-    window.addEventListener('scroll', toggleVisibility)
-    return () => window.removeEventListener('scroll', toggleVisibility)
+    // Show button immediately when component mounts
+    setIsVisible(true)
   }, [])
 
   const handleWhatsAppClick = () => {

@@ -5,6 +5,7 @@ import Certificates from './components/Certificates.tsx'
 import Contact from './components/Contact.tsx'
 import Footer from './components/Footer.tsx'
 import Navigation from './components/Navigation.tsx'
+import WhatsAppButton from './components/WhatsAppButton.tsx'
 
 const App: FC = () => {
   return (
@@ -15,6 +16,7 @@ const App: FC = () => {
       <Certificates />
       <Contact />
       <Footer />
+      <WhatsAppButton />
     </div>
   )
 }

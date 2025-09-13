@@ -1,0 +1,6 @@
+name = "portfolio-website"
+compatibility_date = "2023-12-01"
+
+# Pages configuration for Cloudflare Pages
+[pages]
+directory = "dist"

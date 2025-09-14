@@ -10,7 +10,7 @@ const WhatsAppButton: React.FC = () => {
   }, [])
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '905352316686' // Your phone number without + sign
+    const phoneNumber = '905352316686' // +90 535 231 66 86 (Turkey)
     const message = 'Hello! I saw your portfolio and would like to get in touch.'
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
     window.open(whatsappUrl, '_blank')

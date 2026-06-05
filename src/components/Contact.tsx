@@ -11,6 +11,7 @@ const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    subject: '',
     message: '',
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,21 +47,21 @@ const Contact: React.FC = () => {
 
       if (response.ok) {
         setSubmitStatus('success')
-        setFormData({ name: '', email: '', message: '' })
+        setFormData({ name: '', email: '', subject: '', message: '' })
       } else {
         // If backend fails, fall back to mailto
-        const mailtoLink = `mailto:alhaddad.a.hani@gmail.com?subject=Contact from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`
+        const mailtoLink = `mailto:alhaddad.a.hani@gmail.com?subject=${encodeURIComponent(formData.subject || `Contact from ${formData.name}`)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`)}`
         window.open(mailtoLink, '_blank')
         setSubmitStatus('success')
-        setFormData({ name: '', email: '', message: '' })
+        setFormData({ name: '', email: '', subject: '', message: '' })
       }
     } catch (error) {
       console.error('Error submitting form:', error)
       // Fallback to mailto if API is not available
-      const mailtoLink = `mailto:alhaddad.a.hani@gmail.com?subject=Contact from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`)}`
+      const mailtoLink = `mailto:alhaddad.a.hani@gmail.com?subject=${encodeURIComponent(formData.subject || `Contact from ${formData.name}`)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nSubject: ${formData.subject}\n\nMessage:\n${formData.message}`)}`
       window.open(mailtoLink, '_blank')
       setSubmitStatus('success')
-      setFormData({ name: '', email: '', message: '' })
+      setFormData({ name: '', email: '', subject: '', message: '' })
     } finally {
       setIsSubmitting(false)
     }
@@ -76,6 +77,7 @@ const Contact: React.FC = () => {
       title: 'Email',
       value: 'alhaddad.a.hani@gmail.com',
       link: 'mailto:alhaddad.a.hani@gmail.com',
+      hasLink: true,
     },
     {
       icon: (
@@ -86,6 +88,7 @@ const Contact: React.FC = () => {
       title: 'Phone',
       value: '+90 535 231 66 86',
       link: 'tel:+905352316686',
+      hasLink: true,
     },
     {
       icon: (
@@ -96,12 +99,13 @@ const Contact: React.FC = () => {
       ),
       title: 'Location',
       value: 'Türkiye, Ankara',
-      link: '#',
+      link: undefined,
+      hasLink: false,  // No navigation — just display info
     },
   ]
 
   return (
-    <section id="contact" className="section-padding bg-gray-900">
+    <section id="contact" className="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="container-max">
         <motion.div
           ref={ref}
@@ -110,11 +114,11 @@ const Contact: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             Get In Touch
           </h2>
           <div className="w-24 h-1 bg-primary-400 mx-auto mb-8"></div>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
             Have a project in mind or want to collaborate? I'd love to hear from you.
             Send me a message and I'll get back to you as soon as possible.
           </p>
@@ -129,8 +133,8 @@ const Contact: React.FC = () => {
             className="space-y-8"
           >
             <div>
-              <h3 className="text-2xl font-bold text-white mb-6">Let's Connect</h3>
-              <p className="text-gray-300 mb-8 leading-relaxed">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Let's Connect</h3>
+              <p className="text-gray-600 dark:text-gray-300 mb-8 leading-relaxed">
                 I'm always interested in new opportunities and exciting projects.
                 Whether you have a question, want to work together, or just want to say hi,
                 feel free to reach out!
@@ -138,30 +142,55 @@ const Contact: React.FC = () => {
             </div>
 
             <div className="space-y-6">
-              {contactInfo.map((info, index) => (
-                <motion.a
-                  key={index}
-                  href={info.link}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={inView ? { opacity: 1, x: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
-                  whileHover={{ x: 5 }}
-                  className="flex items-center space-x-4 p-4 bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 group"
-                >
-                  <div className="flex-shrink-0 w-12 h-12 bg-primary-900 text-primary-400 rounded-lg flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
-                    {info.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-white">{info.title}</h4>
-                    <p className="text-gray-300">{info.value}</p>
-                  </div>
-                </motion.a>
-              ))}
+              {contactInfo.map((info, index) => {
+                const sharedClasses = "flex items-center space-x-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 group border border-gray-200 dark:border-gray-700"
+                const inner = (
+                  <>
+                    <div className="flex-shrink-0 w-12 h-12 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-400 rounded-lg flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-colors duration-300">
+                      {info.icon}
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">{info.title}</h4>
+                      <p className="text-gray-600 dark:text-gray-300">{info.value}</p>
+                    </div>
+                  </>
+                )
+
+                // Render location (no link) as a plain div so clicking does nothing
+                if (!info.hasLink) {
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={inView ? { opacity: 1, x: 0 } : {}}
+                      transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+                      className={sharedClasses}
+                    >
+                      {inner}
+                    </motion.div>
+                  )
+                }
+
+                // Email and Phone render as real links
+                return (
+                  <motion.a
+                    key={index}
+                    href={info.link}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={inView ? { opacity: 1, x: 0 } : {}}
+                    transition={{ duration: 0.5, delay: 0.4 + index * 0.1 }}
+                    whileHover={{ x: 5 }}
+                    className={sharedClasses}
+                  >
+                    {inner}
+                  </motion.a>
+                )
+              })}
             </div>
 
             {/* Social Links */}
             <div className="pt-8">
-              <h4 className="text-lg font-semibold text-white mb-4">Follow Me</h4>
+              <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Follow Me</h4>
               <div className="flex space-x-4">
                 {[
                   { name: 'LinkedIn', href: 'https://www.linkedin.com/in/abdullah-alhaddad-76a101344/', icon: 'linkedin' },
@@ -196,13 +225,13 @@ const Contact: React.FC = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-gray-800 rounded-xl shadow-lg p-8"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-200 dark:border-gray-700"
           >
-            <h3 className="text-2xl font-bold text-white mb-6">Send a Message</h3>
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send a Message</h3>
             
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Name
                 </label>
                 <input
@@ -212,13 +241,29 @@ const Contact: React.FC = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200"
+                  className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400"
                   placeholder="Your full name"
                 />
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Subject
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  name="subject"
+                  value={formData.subject}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400"
+                  placeholder="What is this about?"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Email
                 </label>
                 <input
@@ -228,13 +273,13 @@ const Contact: React.FC = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200"
+                  className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 placeholder-gray-400"
                   placeholder="your.email@example.com"
                 />
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
+                <label htmlFor="message" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Message
                 </label>
                 <textarea
@@ -244,7 +289,7 @@ const Contact: React.FC = () => {
                   onChange={handleChange}
                   required
                   rows={5}
-                  className="w-full px-4 py-3 bg-gray-700 border border-gray-600 text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 resize-none"
+                  className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors duration-200 resize-none placeholder-gray-400"
                   placeholder="Tell me about your project or just say hello!"
                 />
               </div>

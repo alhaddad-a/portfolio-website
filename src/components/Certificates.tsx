@@ -81,7 +81,7 @@ const Certificates: React.FC = () => {
   ]
 
   return (
-    <section id="certificates" className="section-padding bg-black">
+    <section id="certificates" className="section-padding bg-white dark:bg-black transition-colors duration-300">
       <div className="container-max">
         <motion.div
           ref={ref}
@@ -90,13 +90,14 @@ const Certificates: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            Certificates 
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            Certificates
           </h2>
           <div className="w-24 h-1 bg-primary-400 mx-auto mb-8"></div>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            Continuous learning is key to staying current in technology. Here are some of my
-            professional certifications that validate my expertise in various technologies.
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Committed to continuous learning in data engineering and big data technologies.
+            Here are the professional certifications that validate my skills across the
+            modern data stack.
           </p>
         </motion.div>
 
@@ -110,7 +111,7 @@ const Certificates: React.FC = () => {
               whileHover={{ y: -5 }}
               className="group"
             >
-              <div className="bg-gray-900 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-800">
+              <div className="bg-gray-50 dark:bg-gray-900 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-800">
                 {/* Certificate Image */}
                 <div className="relative h-48 overflow-hidden">
                   <img
@@ -131,14 +132,14 @@ const Certificates: React.FC = () => {
                 {/* Certificate Content */}
                 <div className="p-6">
                   <div className="mb-4">
-                    <h3 className="text-xl font-bold text-white mb-2 group-hover:text-primary-400 transition-colors duration-300">
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">
                       {cert.title}
                     </h3>
-                    <p className="text-primary-400 font-semibold mb-1">{cert.issuer}</p>
-                    <p className="text-sm text-gray-400">{cert.date}</p>
+                    <p className="text-primary-600 dark:text-primary-400 font-semibold mb-1">{cert.issuer}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{cert.date}</p>
                   </div>
 
-                  <p className="text-gray-300 mb-6 leading-relaxed">
+                  <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
                     {cert.description}
                   </p>
 
@@ -168,34 +169,21 @@ const Certificates: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.8 }}
           className="text-center mt-12"
         >
-            <div className="bg-gray-800 rounded-xl p-8 max-w-4xl mx-auto">
-              <h3 className="text-2xl font-bold text-white mb-4">
-                Continuous Learning
-              </h3>
-              <p className="text-gray-300 mb-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-8 max-w-4xl mx-auto border border-gray-200 dark:border-gray-700">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Continuous Learning
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
               I believe in staying up-to-date with the latest technologies and best practices.
               These certifications represent my commitment to professional growth and expertise
               in modern web development technologies.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <span className="px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-                Data Engineering
-              </span>
-              <span className="px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-                Python Programming
-              </span>
-              <span className="px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-                Big Data Processing
-              </span>
-              <span className="px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-                Full Stack Development
-              </span>
-              <span className="px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-                Machine Learning
-              </span>
-              <span className="px-4 py-2 bg-primary-100 text-primary-800 rounded-full text-sm font-medium">
-                Database Design
-              </span>
+              {['Data Engineering', 'Python', 'Apache Spark / PySpark', 'SQL & Databases', 'Data Warehousing', 'Generative AI'].map((tag) => (
+                <span key={tag} className="px-4 py-2 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 rounded-full text-sm font-medium border border-primary-200 dark:border-primary-800">
+                  {tag}
+                </span>
+              ))}
             </div>
           </div>
         </motion.div>

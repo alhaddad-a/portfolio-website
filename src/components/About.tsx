@@ -8,17 +8,16 @@ const About: React.FC = () => {
   })
 
   const skills = [
-    { name: 'React', level: 65, color: 'bg-blue-500' },
-    { name: 'TypeScript', level: 50, color: 'bg-blue-600' },
-    { name: 'Node.js', level: 50, color: 'bg-green-500' },
-    { name: 'Python', level: 75, color: 'bg-yellow-500' },
-    { name: 'MongoDB', level: 65, color: 'bg-green-600' },
-    { name: 'AWS', level: 50, color: 'bg-orange-500' },
+    { name: 'Python', level: 80, color: 'bg-yellow-500' },
+    { name: 'SQL / SQL Server', level: 80, color: 'bg-blue-500' },
+    { name: 'PySpark / Apache Spark', level: 70, color: 'bg-orange-500' },
+    { name: 'Databricks / Delta Lake', level: 70, color: 'bg-red-500' },
+    { name: 'ETL & Data Modeling', level: 75, color: 'bg-purple-500' },
+    { name: 'Data Warehousing', level: 75, color: 'bg-green-500' },
   ]
 
-
   return (
-    <section id="about" className="section-padding bg-gray-900">
+    <section id="about" className="section-padding bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       <div className="container-max">
         <motion.div
           ref={ref}
@@ -27,12 +26,12 @@ const About: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
             About Me
           </h2>
           <div className="w-24 h-1 bg-primary-400 mx-auto mb-8"></div>
-          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-          Enthusiastic about full-stack development, with growing experience in React, Tailwind CSS, Python, and Django ORM. Focused on building practical, user-friendly applications while continuously learning and improving as a developer.
+          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            Aspiring Data Engineer with hands-on experience building modern data warehouses, ETL pipelines, and big data solutions. Skilled in Python, SQL Server, Apache Spark, and Databricks, with a strong foundation in dimensional data modeling and the Medallion Architecture. Passionate about transforming raw data into reliable, analysis-ready datasets.
           </p>
         </motion.div>
 
@@ -43,7 +42,7 @@ const About: React.FC = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="max-w-2xl mx-auto"
         >
-          <h3 className="text-2xl font-bold text-white mb-6 text-center">Technical Skills</h3>
+          <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">Technical Skills</h3>
           <div className="space-y-4">
             {skills.map((skill, index) => (
               <motion.div
@@ -54,10 +53,10 @@ const About: React.FC = () => {
                 className="space-y-2"
               >
                 <div className="flex justify-between items-center">
-                  <span className="font-medium text-gray-300">{skill.name}</span>
-                  <span className="text-sm text-gray-400">{skill.level}%</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{skill.name}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">{skill.level}%</span>
                 </div>
-                <div className="w-full bg-gray-700 rounded-full h-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={inView ? { width: `${skill.level}%` } : {}}

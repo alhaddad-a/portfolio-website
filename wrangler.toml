@@ -5,5 +5,13 @@ compatibility_date = "2023-12-01"
 [pages]
 directory = "dist"
 
+# Enforce Node.js 20 for Cloudflare Pages build
+[pages.build]
+command = "npm run build"
+cwd = "./"
+
 [vars]
 NODE_VERSION = "20"
+
+[env.production]
+node_version = "20"

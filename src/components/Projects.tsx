@@ -45,7 +45,7 @@ const Projects: React.FC = () => {
       description:
         'Implemented a scalable data pipeline on Databricks following the Medallion Architecture (Bronze → Silver → Gold layers). Handles raw data ingestion, cleansing and transformation, and curated output ready for business intelligence and analytics.',
       tags: ['Databricks', 'PySpark', 'Medallion Architecture', 'Delta Lake', 'Python'],
-      image: '/databricks_project.png',
+      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
       color: 'from-orange-400 to-red-600',
       githubLink: 'https://github.com/alhaddad-a/databricks-medallion-pipeline',
       liveLink: undefined,
@@ -56,7 +56,7 @@ const Projects: React.FC = () => {
       description:
         'Built an end-to-end healthcare data lakehouse on Databricks using Delta Lake and the Medallion Architecture. Processes and transforms real-world healthcare datasets through Bronze, Silver, and Gold layers, enabling reliable analytics and reporting on patient and clinical data.',
       tags: ['Databricks', 'Delta Lake', 'PySpark', 'Healthcare', 'Medallion Architecture', 'Python'],
-      image: '/healthcare_project.png',
+      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop',
       color: 'from-green-400 to-teal-600',
       githubLink: 'https://github.com/alhaddad-a/healthcare-lakehouse-databricks',
       liveLink: undefined,

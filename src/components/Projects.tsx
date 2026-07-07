@@ -34,7 +34,7 @@ const Projects: React.FC = () => {
       description:
         'Built a modern data warehouse using SQL Server, covering the full lifecycle: ETL processes, dimensional data modeling (star schema), and analytical reporting. Demonstrates real-world data engineering patterns from staging through to the presentation layer.',
       tags: ['SQL Server', 'ETL', 'Data Modeling', 'Star Schema', 'Analytics'],
-      image: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?w=600&h=400&fit=crop',
+      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop',
       color: 'from-blue-400 to-cyan-600',
       githubLink: 'https://github.com/alhaddad-a/SQL-DW-Project_1',
       liveLink: undefined,

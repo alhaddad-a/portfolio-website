@@ -35,7 +35,7 @@ const Hero: React.FC = () => {
                 <img
                   src="/profile-photo.jpg"
                   alt="Abdullah Alhaddad"
-                  className="w-24 h-24 xs:w-28 xs:h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 xl:w-48 xl:h-48 rounded-full object-cover shadow-2xl border-4 border-primary-400"
+                  className="w-24 h-24 xs:w-28 xs:h-28 sm:w-36 sm:h-36 md:w-40 md:h-40 lg:w-44 lg:h-44 xl:w-48 xl:h-48 rounded-full object-cover object-top shadow-2xl border-4 border-primary-400"
                 />
                 <div className="absolute inset-0 rounded-full border-2 border-primary-300 opacity-50 animate-pulse"></div>
               </div>

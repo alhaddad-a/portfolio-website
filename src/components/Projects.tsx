@@ -34,7 +34,7 @@ const Projects: React.FC = () => {
       description:
         'Built a modern data warehouse using SQL Server, covering the full lifecycle: ETL processes, dimensional data modeling (star schema), and analytical reporting. Demonstrates real-world data engineering patterns from staging through to the presentation layer.',
       tags: ['SQL Server', 'ETL', 'Data Modeling', 'Star Schema', 'Analytics'],
-      image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=600&h=400&fit=crop',
+      image: '/sql_dw_project.png',
       color: 'from-blue-400 to-cyan-600',
       githubLink: 'https://github.com/alhaddad-a/SQL-DW-Project_1',
       liveLink: undefined,
@@ -45,7 +45,7 @@ const Projects: React.FC = () => {
       description:
         'Implemented a scalable data pipeline on Databricks following the Medallion Architecture (Bronze → Silver → Gold layers). Handles raw data ingestion, cleansing and transformation, and curated output ready for business intelligence and analytics.',
       tags: ['Databricks', 'PySpark', 'Medallion Architecture', 'Delta Lake', 'Python'],
-      image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=400&fit=crop',
+      image: '/databricks_project.png',
       color: 'from-orange-400 to-red-600',
       githubLink: 'https://github.com/alhaddad-a/databricks-medallion-pipeline',
       liveLink: undefined,
@@ -56,7 +56,7 @@ const Projects: React.FC = () => {
       description:
         'Built an end-to-end healthcare data lakehouse on Databricks using Delta Lake and the Medallion Architecture. Processes and transforms real-world healthcare datasets through Bronze, Silver, and Gold layers, enabling reliable analytics and reporting on patient and clinical data.',
       tags: ['Databricks', 'Delta Lake', 'PySpark', 'Healthcare', 'Medallion Architecture', 'Python'],
-      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&h=400&fit=crop',
+      image: '/healthcare_project.png',
       color: 'from-green-400 to-teal-600',
       githubLink: 'https://github.com/alhaddad-a/healthcare-lakehouse-databricks',
       liveLink: undefined,

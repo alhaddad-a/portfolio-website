@@ -7,6 +7,7 @@
   "trailingSlash": true,
   "redirects": [
     { "source": "/projects", "destination": "/#work", "permanent": true },
+    { "source": "/projects/", "destination": "/#work", "permanent": true },
     { "source": "/og-image.png", "destination": "/assets/img/og-image.jpg", "permanent": true },
     { "source": "/images/:file*", "destination": "/assets/img/abdullah-alhaddad-800.jpg", "permanent": true }
   ],

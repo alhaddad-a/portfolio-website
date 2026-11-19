@@ -471,36 +471,34 @@ def footer() -> str:
 """
 
 
-def diagram_svg(uid: str, cols: list[dict], compact: bool = False, label: str = "") -> str:
+def layer_row(c: dict) -> str:
+    """One row of the homepage card's pipeline list: layer name + the tables in it."""
+    items = c["items"]
+    shown = ", ".join(items[:3]) + (f" +{len(items) - 3}" if len(items) > 3 else "")
+    return (f'<li class="ly ly-{c["tone"]}"><span class="ly-name">{escape(c["head"])}</span>'
+            f'<span class="ly-items">{escape(shown)}</span></li>')
+
+
+def diagram_svg(uid: str, cols: list[dict], label: str = "") -> str:
     """Draws a Bronze/Silver/Gold flow as inline SVG that follows the page theme."""
-    if compact:
-        cols = [c for c in cols if c["tone"] != "use"]
-        colw, gap, H = 150, 30, 150
-    else:
-        colw, gap = 200, 40
-        rows = max(len(c["items"]) for c in cols)
-        H = 64 + rows * 36 + 10
+    colw, gap = 200, 40
+    rows = max(len(c["items"]) for c in cols)
+    H = 64 + rows * 36 + 10
     n = len(cols)
     W = n * colw + (n - 1) * gap
-    cls = ' class="dgc"' if compact else ""
-    out = [f'<svg{cls} viewBox="0 0 {W} {H}" role="img" aria-labelledby="{uid}-t" xmlns="http://www.w3.org/2000/svg">',
+    out = [f'<svg viewBox="0 0 {W} {H}" role="img" aria-labelledby="{uid}-t" xmlns="http://www.w3.org/2000/svg">',
            f'<title id="{uid}-t">{escape(label)}</title>']
     for i, c in enumerate(cols):
         x = i * (colw + gap)
         tone = c["tone"]
         out.append(f'<rect class="dg-col-bg" x="{x}.5" y="0.5" width="{colw - 1}" height="{H - 1}"/>')
         out.append(f'<rect class="dg-{tone}" x="{x}" y="0" width="{colw}" height="3"/>')
-        if compact:
-            out.append(f'<text class="dg-head dg-{tone}" x="{x + 14}" y="30" font-size="14">{escape(c["head"])}</text>')
-            out.append(f'<text class="dg-big" x="{x + 12}" y="98" font-size="52">{escape(c["count"])}</text>')
-            out.append(f'<text class="dg-sub" x="{x + 14}" y="128" font-size="14">{escape(c["unit"])}</text>')
-        else:
-            out.append(f'<text class="dg-head dg-{tone}" x="{x + 12}" y="24">{escape(c["head"])}</text>')
-            out.append(f'<text class="dg-sub" x="{x + 12}" y="42">{escape(c["sub"])}</text>')
-            for j, item in enumerate(c["items"]):
-                y = 60 + j * 36
-                out.append(f'<g class="dg-item"><rect x="{x + 10}.5" y="{y}.5" width="{colw - 21}" height="27"/>'
-                           f'<text x="{x + 20}" y="{y + 19}">{escape(item)}</text></g>')
+        out.append(f'<text class="dg-head dg-{tone}" x="{x + 12}" y="24">{escape(c["head"])}</text>')
+        out.append(f'<text class="dg-sub" x="{x + 12}" y="42">{escape(c["sub"])}</text>')
+        for j, item in enumerate(c["items"]):
+            y = 60 + j * 36
+            out.append(f'<g class="dg-item"><rect x="{x + 10}.5" y="{y}.5" width="{colw - 21}" height="27"/>'
+                       f'<text x="{x + 20}" y="{y + 19}">{escape(item)}</text></g>')
         if i < n - 1:
             ay = H / 2
             x1, x2 = x + colw + 6, x + colw + gap - 6
@@ -554,9 +552,7 @@ def page_home() -> str:
     for i, p in enumerate(PROJECTS, 1):
         url = f"/projects/{p['slug']}/"
         metrics = "".join(f"<div><dt>{escape(l)}</dt><dd>{escape(v)}</dd></div>" for v, l in p["metrics"])
-        svg = diagram_svg(f"thumb{i}", p["diagram"], compact=True,
-                          label=f"Pipeline overview for {p['title']}: " + ", then ".join(
-                              f"{c['head']} ({c['count']} {c['unit']})" for c in p["diagram"] if c["tone"] != "use"))
+        layers = "".join(layer_row(c) for c in p["diagram"])
         cases.append(f"""
 <article class="case">
   <div class="idx">{i:02d} / {len(PROJECTS):02d}</div>
@@ -570,7 +566,7 @@ def page_home() -> str:
       <a href="{p['repo']}" target="_blank" rel="noopener">Source on GitHub ↗</a>
     </div>
   </div>
-  <figure class="case-fig"><a href="{url}" tabindex="-1" aria-hidden="true"><div class="diagram">{svg}</div></a></figure>
+  <ol class="layers" aria-label="Pipeline layers for {escape(p['title'])}">{layers}</ol>
 </article>""")
 
     toolkit = "".join(

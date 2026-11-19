@@ -302,17 +302,17 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--code-bg); 
 }
 
 /* ---------- sections ---------- */
-.section { padding: clamp(64px, 9vw, 120px) 0; }
+.section { padding: clamp(56px, 7vw, 96px) 0; }
 .section + .section { border-top: 1px solid var(--line); }
 .sec-head { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 24px; margin-bottom: clamp(36px, 5vw, 64px); align-items: baseline; }
 .sec-head .num { font-family: var(--mono); font-size: 13px; color: var(--muted); }
 .sec-head h2 { font-family: var(--serif); font-size: clamp(40px, 5.5vw, 68px); line-height: 1; letter-spacing: -0.015em; }
 .sec-head p { grid-column: 2; margin: 16px 0 0; max-width: 60ch; color: var(--ink-2); font-size: 18px; }
-.indent { margin-left: 184px; }
+.indent, .toolkit.indent, .principles.indent { margin-left: 184px; }
 @media (max-width: 760px) {
   .sec-head { grid-template-columns: 1fr; gap: 8px; }
   .sec-head p { grid-column: 1; }
-  .indent { margin-left: 0; }
+  .indent, .toolkit.indent, .principles.indent { margin-left: 0; }
 }
 
 /* about */
@@ -327,9 +327,10 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--code-bg); 
 /* work */
 .cases { border-top: 1px solid var(--ink); }
 .case {
-  display: grid; grid-template-columns: 160px minmax(0, 1fr) minmax(0, 1.05fr); gap: 24px clamp(24px, 3vw, 48px);
+  display: grid; grid-template-columns: 160px minmax(0, 1fr) minmax(0, 0.9fr); gap: 24px;
   padding: clamp(32px, 4vw, 48px) 0; border-bottom: 1px solid var(--line);
 }
+.case > div:nth-child(2) { padding-right: clamp(0px, 3vw, 40px); }
 .case .idx { font-family: var(--mono); font-size: 13px; color: var(--muted); }
 .case h3 { font-family: var(--serif); font-size: clamp(30px, 3.4vw, 42px); line-height: 1.05; margin-bottom: 14px; }
 .case h3 a { text-decoration: none; }
@@ -343,11 +344,24 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--code-bg); 
 .links { display: flex; flex-wrap: wrap; gap: 8px 20px; font-family: var(--mono); font-size: 13.5px; }
 .links a { text-decoration: none; border-bottom: 1px solid var(--line-strong); padding-bottom: 2px; }
 .links a:hover { border-color: var(--accent); }
-.case-fig { margin: 0; align-self: start; }
-.case-fig a { display: block; }
+/* pipeline layers list on each project card */
+.layers { list-style: none; margin: 0; padding: 0; align-self: start; border-top: 1px solid var(--line); }
+.ly {
+  position: relative; display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px; align-items: baseline;
+  padding: 13px 0 13px 18px; border-bottom: 1px solid var(--line);
+}
+.ly::before { content: ""; position: absolute; left: 0; top: 0; bottom: -1px; width: 3px; background: currentColor; }
+.ly + .ly::after {
+  content: "↓"; position: absolute; left: -6px; top: -11px; font: 400 12px/1 var(--mono);
+  background: var(--bg); color: var(--muted); padding: 2px 1px;
+}
+.ly-name { font: 500 11.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.ly-items { font: 400 13.5px/1.5 var(--mono); color: var(--ink-2); overflow-wrap: anywhere; }
+.ly-src { color: var(--ink-2); } .ly-bronze { color: var(--bronze); } .ly-silver { color: var(--silver); }
+.ly-gold { color: var(--gold); } .ly-use { color: var(--accent); }
 @media (max-width: 1000px) {
   .case { grid-template-columns: 1fr; }
-  .case-fig { order: 3; }
+  .layers { max-width: 560px; }
 }
 
 /* diagrams */
@@ -361,8 +375,6 @@ code { font-family: var(--mono); font-size: 0.88em; background: var(--code-bg); 
 .dg-item rect { fill: var(--surface); stroke: var(--line-strong); }
 .dg-item text { font: 400 12px var(--mono); fill: var(--ink); }
 .dg-big { font: 400 30px var(--serif); fill: var(--ink); }
-.dgc .dg-head, .dgc .dg-sub { font-size: 14px; }
-.dgc .dg-big { font-size: 52px; }
 .dg-arrow { stroke: var(--muted); stroke-width: 1.25; fill: none; }
 .dg-arrowhead { fill: var(--muted); }
 .dg-src { fill: var(--ink-2); } .dg-bronze { fill: var(--bronze); } .dg-silver { fill: var(--silver); } .dg-gold { fill: var(--gold); } .dg-use { fill: var(--accent); }

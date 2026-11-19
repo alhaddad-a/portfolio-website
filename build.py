@@ -16,6 +16,7 @@ from __future__ import annotations
 import datetime as _dt
 import hashlib
 import json
+import re
 from html import escape
 from pathlib import Path
 
@@ -60,7 +61,9 @@ ABOUT = [
     "business-ready star schemas and KPI tables. I've implemented that pattern end to end "
     "in <strong>Microsoft SQL Server</strong> with T-SQL stored procedures, and on "
     "<strong>Databricks</strong> with PySpark, Delta Lake and Unity Catalog — including a "
-    "healthcare lakehouse covering five years of admissions and billing data.",
+    "healthcare lakehouse covering five years of admissions and billing data. I also take "
+    "data through to the decision: a Power BI analysis of a retail bank's 2025 results, "
+    "ending in a memo to the CFO.",
     "I care about the unglamorous parts: data-quality checks that run as code, scripts "
     "that can be re-run safely, and documentation the next engineer can actually use. "
     "I'm open to data engineering roles and collaborations.",
@@ -80,6 +83,7 @@ TOOLKIT = [
     ("Platforms", ["Databricks", "Delta Lake", "Unity Catalog", "Microsoft SQL Server", "SSMS"]),
     ("Modeling", ["Medallion architecture", "Dimensional modeling", "Star schema", "Surrogate keys", "SCD Type 1"]),
     ("Quality", ["Validation rules", "Deduplication", "Referential-integrity checks", "Idempotent loads"]),
+    ("Analytics", ["Power BI", "Power Query (M)", "DAX", "Reconciliation checks"]),
     ("Practice", ["Git & GitHub", "Data catalogs", "Naming conventions", "Lineage documentation"]),
 ]
 
@@ -358,7 +362,134 @@ hospitals and procedures, and billing links back to admissions.</p>"""),
 </ul>"""),
         ],
     },
+    {
+        "slug": "harborview-bank-analysis",
+        "title": "Harborview Bank Power BI Analysis",
+        "seo_title": "Harborview Bank Power BI Analysis | Abdullah Alhaddad",
+        "summary": (
+            "A Power BI analysis that settles a CFO-vs-Retail argument: fee income hit a "
+            "record, but East-region credit losses turned the bank's 2025 result negative."
+        ),
+        "description": (
+            "Power BI case study: 2.3M bank transactions cleaned in Power Query, modeled as a "
+            "star schema and checked with DAX to explain a negative 2025 result."
+        ),
+        "stack": ["Power BI", "Power Query (M)", "DAX", "Star schema", "Reconciliation checks"],
+        "langs": ["DAX", "Power Query M"],
+        "repo": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis",
+        "metrics": [("2.3M", "transactions analysed"), ("19", "data issues fixed"), ("6", "report pages")],
+        "diagram": [
+            {"tone": "src", "head": "Raw data", "sub": "9 CSV files · 2023–2025",
+             "items": ["transactions (2.3M)", "accounts", "customers", "loans", "products", "branches", "3 lookup tables"],
+             "count": "9", "unit": "CSV files"},
+            {"tone": "silver", "head": "Clean", "sub": "Power Query (M)",
+             "items": ["19 issues fixed", "duplicates removed", "mixed dates parsed", "rates % → decimals", "placeholder scores", "orphan keys dropped"],
+             "count": "19", "unit": "fixes"},
+            {"tone": "gold", "head": "Model", "sub": "star schema · Import",
+             "items": ["Transactions (fact)", "Loans (fact)", "Customers", "Accounts", "Products", "Branches", "Date (marked)"],
+             "count": "7", "unit": "tables"},
+            {"tone": "use", "head": "DAX", "sub": "measures + checks",
+             "items": ["churn & reactivation", "12-mo default rate", "price-change effect", "reconciliation"],
+             "count": "", "unit": ""},
+            {"tone": "use", "head": "Report", "sub": "6 pages + CFO memo",
+             "items": ["Overview", "Fee Income", "Credit Risk", "Customers", "Price Change", "Data Checks"],
+             "count": "6", "unit": "pages"},
+        ],
+        "facts": [("Tool", "Power BI Desktop (Import mode)"), ("Data", "Simulated retail bank, 2023–2025"), ("Output", "6-page report + CFO memo")],
+        "sections": [
+            ("question", "The business question", """
+<p>Leadership disagreed about 2025. The <strong>Head of Retail</strong> called it the best year
+for fee income, thanks to the July 2024 rise in the monthly checking fee from $5 to $12. The
+<strong>CFO</strong> said overall results got worse, with customers leaving and credit losses rising.</p>
+<p>The analysis tests both claims and recommends whether to keep the fee, and what to do about
+customers and credit risk in 2026. Before looking at any values, each claim was turned into
+neutral questions (an issue tree), with 14 KPIs and written hypotheses.</p>"""),
+            ("findings", "What the data showed", """
+{SHOT:overview:Overview page: fee income, credit losses and measurable result by year, 2023–2025}
+<ol>
+<li><strong>Fee income rose 2.6×</strong>, from $0.45M (2023) to $1.16M (2025), because of the price,
+not more customers: accounts paying the fee fell from 8,803 to 7,994.</li>
+<li><strong>The price rise very likely cost customers.</strong> Mass checking closures went from 0.39%
+to 3.05% a month in the first nine months at $12, while fee-free customers stayed flat. The jump
+started the week of the change, hit only checking, and appeared in every region: about 2,640
+extra closures by December 2025.</li>
+<li><strong>The fee is still a net gain, but a shrinking one:</strong> about +$743K after an estimated
+$0.29M of lost revenue, with the monthly gain falling from $59K to $32K.</li>
+<li><strong>The measurable result fell from +$2.56M to −$0.41M</strong> because gross credit losses rose
+ninefold, from $0.52M to $4.65M, not because of the fee.</li>
+<li><strong>Three quarters of 2025 credit losses came from the East region.</strong> East branches
+roughly tripled lending from early 2024, about half of it to borrowers scoring under 650; their
+2024 loans defaulted 10.5% of the time within a year, against 2.1% elsewhere.</li>
+</ol>
+{SHOT:credit-risk:Credit Risk page: where the 2025 credit losses came from}
+<p><strong>Verdict:</strong> both leaders were partly right. Fee income did reach a record, but credit
+losses in East turned the result negative.</p>"""),
+            ("cleaning", "Data cleaning in Power Query", """
+<p>Every column was profiled on the full data set, and 19 problems across four tables were fixed
+and logged, each with how it was found and how many rows it affected. For example:</p>
+<ul>
+<li>120 duplicate customers, 20 duplicate loans and 9,279 duplicate transactions.</li>
+<li>Two date formats in one column: a plain type change would have silently swapped day and month on 549 rows.</li>
+<li>Interest rates stored as percentages instead of decimals, and placeholder credit scores of 0 and 999.</li>
+<li>Transactions dated after the extract date, and 150 transactions on accounts that don't exist.</li>
+</ul>"""),
+            ("model", "Data model", """
+<p>A star schema in Import mode, with auto date/time and automatic relationship detection turned
+off. Every relationship is defined by hand, one-to-many and single-direction.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Table</th><th>Rows</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Transactions</td><td>2,319,645</td><td>Fact: payments, fees and transfers</td></tr>
+<tr><td>Loans</td><td>5,300</td><td>Fact: amount, rate, balance, status</td></tr>
+<tr><td>Accounts</td><td>36,605</td><td>Dimension between Customers and Transactions</td></tr>
+<tr><td>Customers</td><td>20,000</td><td>Dimension: segment, region, income band</td></tr>
+<tr><td>Branches</td><td>25</td><td>Dimension: branch, city, region</td></tr>
+<tr><td>Products</td><td>6</td><td>Dimension: checking, savings, card, three loan types</td></tr>
+<tr><td>Date</td><td>2,557</td><td>Marked date table, 2019–2025</td></tr>
+</tbody></table></div>
+<p>Two design decisions worth calling out:</p>
+<ul>
+<li><strong>Two dates on Loans, one active.</strong> The issue date drives volume and default rate by vintage;
+the default date is an inactive relationship switched on with <code>USERELATIONSHIP</code> inside the loss measures.</li>
+<li><strong>No Branches → Customers relationship.</strong> It would create two filter paths to Loans
+(issuing branch vs. home branch), so customer geography uses Customers[Region] instead.</li>
+</ul>"""),
+            ("validation", "DAX measures & validation", """
+<p>Measures are grouped into folders with descriptions, and include month-end customer snapshots,
+churn and reactivation flows, a 12-month default rate by loan vintage, and a control-group
+estimate of the closures caused by the price change.</p>
+{SHOT:price-change:Price Change page: did the $12 fee pay off after lost customers?}
+<p>Every KPI was reconciled against totals calculated outside Power BI, and against identities that
+must hold every month: <em>fee income = paying accounts × average fee</em>, and <em>customers at end =
+start + new + returning − leavers</em>. All checks return zero and are shown on a dedicated
+Data Checks page in the report.</p>"""),
+            ("recommendations", "Recommendations & limits", """
+<ol>
+<li><strong>Tighten credit approval in East now:</strong> bring the share of sub-650 loans back to the
+12–16% seen elsewhere and review late East loans one by one.</li>
+<li><strong>Keep the $12 fee, but protect the Mass base:</strong> record why customers leave and test a
+fee waiver for active customers on a random group first.</li>
+<li><strong>Investigate the July 2025 chargebacks</strong> ($373K, not confirmed as fraud) and fix the data gaps.</li>
+</ol>
+<p>The report never calls the result “profit”: the data has no operating costs, deposit interest or
+loan-loss provisions, and losses are gross because there is no recovery data. Harborview is a
+fictional bank on a simulated dataset; no real customer information is used.</p>"""),
+        ],
+    },
 ]
+
+
+def shot(name: str, alt: str) -> str:
+    """Responsive screenshot figure for a case study (files in assets/img/harborview-*)."""
+    base = f"/assets/img/harborview-{name}"
+    return (f'<figure class="shot"><img src="{base}-960.webp" '
+            f'srcset="{base}-960.webp 960w, {base}-1600.webp 1600w" sizes="(max-width: 800px) 100vw, 760px" '
+            f'width="1600" height="900" loading="lazy" decoding="async" alt="{escape(alt)}">'
+            f'<figcaption class="label">{escape(alt)}</figcaption></figure>')
+
+
+def expand_shots(html: str) -> str:
+    return re.sub(r"\{SHOT:([\w-]+):([^}]+)\}", lambda m: shot(m.group(1), m.group(2)), html)
 
 NAV = [("About", "/#about"), ("Work", "/#work"), ("Toolkit", "/#toolkit"),
        ("Certificates", "/#certificates"), ("Contact", "/#contact")]
@@ -523,7 +654,7 @@ PERSON = {
     "sameAs": [LINKEDIN, GITHUB],
     "knowsAbout": ["Data Engineering", "ETL", "Data Warehousing", "Python", "SQL", "SQL Server",
                    "Apache Spark", "PySpark", "Databricks", "Delta Lake", "Dimensional Modeling",
-                   "Medallion Architecture"],
+                   "Medallion Architecture", "Power BI", "DAX"],
     "hasCredential": [
         {"@type": "EducationalOccupationalCredential", "name": t, "credentialCategory": "certificate",
          "recognizedBy": {"@type": "Organization", "name": iss}, "url": link}
@@ -634,8 +765,8 @@ def page_home() -> str:
 
 <section class="section" id="work" aria-labelledby="work-title">
   <div class="wrap">
-    <div class="sec-head"><span class="num">02 — Selected work</span><h2 id="work-title">Data engineering projects</h2>
-      <p>Three end-to-end builds — from a SQL Server warehouse to Databricks lakehouses. Each has a full write-up and public source code.</p></div>
+    <div class="sec-head"><span class="num">02 — Selected work</span><h2 id="work-title">Selected projects</h2>
+      <p>Three data pipelines, from a SQL Server warehouse to Databricks lakehouses, and a Power BI analysis of a retail bank. Each has a full write-up and public source code.</p></div>
     <div class="cases">{''.join(cases)}</div>
   </div>
 </section>
@@ -703,14 +834,14 @@ def page_project(idx: int) -> str:
             ]},
             {"@type": "SoftwareSourceCode", "@id": url + "#project", "name": p["title"],
              "description": p["description"], "url": url, "codeRepository": p["repo"],
-             "programmingLanguage": ["Python", "SQL"] if idx else ["SQL"],
+             "programmingLanguage": p.get("langs") or (["Python", "SQL"] if idx else ["SQL"]),
              "keywords": ", ".join(p["stack"]), "author": {"@type": "Person", "@id": PERSON_ID, "name": NAME, "url": SITE_URL + "/"},
              "image": SITE_URL + "/assets/img/og-image.jpg", "dateModified": TODAY},
         ],
     }]
     facts = "".join(f'<div><dt class="label">{escape(k)}</dt><dd>{escape(v)}</dd></div>' for k, v in p["facts"])
     toc = "".join(f'<li><a href="#{sid}">{escape(t)}</a></li>' for sid, t, _ in p["sections"])
-    body = "".join(f'<section id="{sid}" aria-labelledby="{sid}-h"><h2 id="{sid}-h">{escape(t)}</h2>{html}</section>'
+    body = "".join(f'<section id="{sid}" aria-labelledby="{sid}-h"><h2 id="{sid}-h">{escape(t)}</h2>{expand_shots(html)}</section>'
                    for sid, t, html in p["sections"])
     svg = diagram_svg("flow", p["diagram"], label=f"Data flow for {p['title']}: " + " → ".join(
         f"{c['head']} ({', '.join(c['items'])})" for c in p["diagram"]))

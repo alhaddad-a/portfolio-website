@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Harborview Bank Power BI Analysis | Abdullah Alhaddad</title>
+<meta name="description" content="Power BI case study: 2.3M bank transactions cleaned in Power Query, modeled as a star schema and checked with DAX to explain a negative 2025 result.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/projects/harborview-bank-analysis/">
+<meta name="google-site-verification" content="2ttHLWMo1YR8NXcPjT3yxVdfPMFLkX1mqTFv_3ep96M">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="Harborview Bank Power BI Analysis | Abdullah Alhaddad">
+<meta property="og:description" content="Power BI case study: 2.3M bank transactions cleaned in Power Query, modeled as a star schema and checked with DAX to explain a negative 2025 result.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/projects/harborview-bank-analysis/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Harborview Bank Power BI Analysis | Abdullah Alhaddad">
+<meta name="twitter:description" content="Power BI case study: 2.3M bank transactions cleaned in Power Query, modeled as a star schema and checked with DAX to explain a negative 2025 result.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f2ec" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#121210" media="(prefers-color-scheme: dark)">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/instrument-serif-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-sans-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=d29dcf382a">
+<script src="/assets/js/theme.js?v=562920ff80"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://alhaddad-a.vercel.app/"}, {"@type": "ListItem", "position": 2, "name": "Work", "item": "https://alhaddad-a.vercel.app/#work"}, {"@type": "ListItem", "position": 3, "name": "Harborview Bank Power BI Analysis", "item": "https://alhaddad-a.vercel.app/projects/harborview-bank-analysis/"}]}, {"@type": "SoftwareSourceCode", "@id": "https://alhaddad-a.vercel.app/projects/harborview-bank-analysis/#project", "name": "Harborview Bank Power BI Analysis", "description": "Power BI case study: 2.3M bank transactions cleaned in Power Query, modeled as a star schema and checked with DAX to explain a negative 2025 result.", "url": "https://alhaddad-a.vercel.app/projects/harborview-bank-analysis/", "codeRepository": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis", "programmingLanguage": ["DAX", "Power Query M"], "keywords": "Power BI, Power Query (M), DAX, Star schema, Reconciliation checks", "author": {"@type": "Person", "@id": "https://alhaddad-a.vercel.app/#person", "name": "Abdullah Alhaddad", "url": "https://alhaddad-a.vercel.app/"}, "image": "https://alhaddad-a.vercel.app/assets/img/og-image.jpg", "dateModified": "2026-11-19"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Abdullah Alhaddad — home">
+      <span class="brand-mark" aria-hidden="true">AA</span>
+      <span class="brand-name">Abdullah Alhaddad <span>/ Data Engineer</span></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <ul><li><a href="/#about">About</a></li><li><a href="/#work" aria-current="page">Work</a></li><li><a href="/#toolkit">Toolkit</a></li><li><a href="/#certificates">Certificates</a></li><li><a href="/#contact">Contact</a></li></ul>
+      <button class="icon-btn theme-toggle" type="button" aria-label="Switch light/dark theme"><svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"/></svg><svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></button>
+      <button class="icon-btn menu-toggle" type="button" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </nav>
+  </div>
+</header>
+<main id="main">
+<nav class="crumbs wrap" aria-label="Breadcrumb">
+  <ol class="label"><li><a href="/">Home</a></li><li><a href="/#work">Work</a></li><li aria-current="page">Project 04</li></ol>
+</nav>
+<header class="cs-head wrap">
+  <h1>Harborview Bank Power BI Analysis</h1>
+  <p class="lead">A Power BI analysis that settles a CFO-vs-Retail argument: fee income hit a record, but East-region credit losses turned the bank&#x27;s 2025 result negative.</p>
+  <div class="actions mt-28">
+    <a class="btn btn-solid" href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis" target="_blank" rel="noopener">View source on GitHub <span class="arr">↗</span></a>
+  </div>
+  <dl class="cs-facts"><div><dt class="label">Tool</dt><dd>Power BI Desktop (Import mode)</dd></div><div><dt class="label">Data</dt><dd>Simulated retail bank, 2023–2025</dd></div><div><dt class="label">Output</dt><dd>6-page report + CFO memo</dd></div></dl>
+</header>
+<div class="wrap">
+  <figure class="wide-fig">
+    <div class="diagram full"><svg viewBox="0 0 1160 326" role="img" aria-labelledby="flow-t" xmlns="http://www.w3.org/2000/svg"><title id="flow-t">Data flow for Harborview Bank Power BI Analysis: Raw data (transactions (2.3M), accounts, customers, loans, products, branches, 3 lookup tables) → Clean (19 issues fixed, duplicates removed, mixed dates parsed, rates % → decimals, placeholder scores, orphan keys dropped) → Model (Transactions (fact), Loans (fact), Customers, Accounts, Products, Branches, Date (marked)) → DAX (churn &amp; reactivation, 12-mo default rate, price-change effect, reconciliation) → Report (Overview, Fee Income, Credit Risk, Customers, Price Change, Data Checks)</title><rect class="dg-col-bg" x="0.5" y="0.5" width="199" height="325"/><rect class="dg-src" x="0" y="0" width="200" height="3"/><text class="dg-head dg-src" x="12" y="24">Raw data</text><text class="dg-sub" x="12" y="42">9 CSV files · 2023–2025</text><g class="dg-item"><rect x="10.5" y="60.5" width="179" height="27"/><text x="20" y="79">transactions (2.3M)</text></g><g class="dg-item"><rect x="10.5" y="96.5" width="179" height="27"/><text x="20" y="115">accounts</text></g><g class="dg-item"><rect x="10.5" y="132.5" width="179" height="27"/><text x="20" y="151">customers</text></g><g class="dg-item"><rect x="10.5" y="168.5" width="179" height="27"/><text x="20" y="187">loans</text></g><g class="dg-item"><rect x="10.5" y="204.5" width="179" height="27"/><text x="20" y="223">products</text></g><g class="dg-item"><rect x="10.5" y="240.5" width="179" height="27"/><text x="20" y="259">branches</text></g><g class="dg-item"><rect x="10.5" y="276.5" width="179" height="27"/><text x="20" y="295">3 lookup tables</text></g><path class="dg-arrow" d="M206 163.0H228"/><path class="dg-arrowhead" d="M234 163.0l-7 -4v8z"/><rect class="dg-col-bg" x="240.5" y="0.5" width="199" height="325"/><rect class="dg-silver" x="240" y="0" width="200" height="3"/><text class="dg-head dg-silver" x="252" y="24">Clean</text><text class="dg-sub" x="252" y="42">Power Query (M)</text><g class="dg-item"><rect x="250.5" y="60.5" width="179" height="27"/><text x="260" y="79">19 issues fixed</text></g><g class="dg-item"><rect x="250.5" y="96.5" width="179" height="27"/><text x="260" y="115">duplicates removed</text></g><g class="dg-item"><rect x="250.5" y="132.5" width="179" height="27"/><text x="260" y="151">mixed dates parsed</text></g><g class="dg-item"><rect x="250.5" y="168.5" width="179" height="27"/><text x="260" y="187">rates % → decimals</text></g><g class="dg-item"><rect x="250.5" y="204.5" width="179" height="27"/><text x="260" y="223">placeholder scores</text></g><g class="dg-item"><rect x="250.5" y="240.5" width="179" height="27"/><text x="260" y="259">orphan keys dropped</text></g><path class="dg-arrow" d="M446 163.0H468"/><path class="dg-arrowhead" d="M474 163.0l-7 -4v8z"/><rect class="dg-col-bg" x="480.5" y="0.5" width="199" height="325"/><rect class="dg-gold" x="480" y="0" width="200" height="3"/><text class="dg-head dg-gold" x="492" y="24">Model</text><text class="dg-sub" x="492" y="42">star schema · Import</text><g class="dg-item"><rect x="490.5" y="60.5" width="179" height="27"/><text x="500" y="79">Transactions (fact)</text></g><g class="dg-item"><rect x="490.5" y="96.5" width="179" height="27"/><text x="500" y="115">Loans (fact)</text></g><g class="dg-item"><rect x="490.5" y="132.5" width="179" height="27"/><text x="500" y="151">Customers</text></g><g class="dg-item"><rect x="490.5" y="168.5" width="179" height="27"/><text x="500" y="187">Accounts</text></g><g class="dg-item"><rect x="490.5" y="204.5" width="179" height="27"/><text x="500" y="223">Products</text></g><g class="dg-item"><rect x="490.5" y="240.5" width="179" height="27"/><text x="500" y="259">Branches</text></g><g class="dg-item"><rect x="490.5" y="276.5" width="179" height="27"/><text x="500" y="295">Date (marked)</text></g><path class="dg-arrow" d="M686 163.0H708"/><path class="dg-arrowhead" d="M714 163.0l-7 -4v8z"/><rect class="dg-col-bg" x="720.5" y="0.5" width="199" height="325"/><rect class="dg-use" x="720" y="0" width="200" height="3"/><text class="dg-head dg-use" x="732" y="24">DAX</text><text class="dg-sub" x="732" y="42">measures + checks</text><g class="dg-item"><rect x="730.5" y="60.5" width="179" height="27"/><text x="740" y="79">churn &amp; reactivation</text></g><g class="dg-item"><rect x="730.5" y="96.5" width="179" height="27"/><text x="740" y="115">12-mo default rate</text></g><g class="dg-item"><rect x="730.5" y="132.5" width="179" height="27"/><text x="740" y="151">price-change effect</text></g><g class="dg-item"><rect x="730.5" y="168.5" width="179" height="27"/><text x="740" y="187">reconciliation</text></g><path class="dg-arrow" d="M926 163.0H948"/><path class="dg-arrowhead" d="M954 163.0l-7 -4v8z"/><rect class="dg-col-bg" x="960.5" y="0.5" width="199" height="325"/><rect class="dg-use" x="960" y="0" width="200" height="3"/><text class="dg-head dg-use" x="972" y="24">Report</text><text class="dg-sub" x="972" y="42">6 pages + CFO memo</text><g class="dg-item"><rect x="970.5" y="60.5" width="179" height="27"/><text x="980" y="79">Overview</text></g><g class="dg-item"><rect x="970.5" y="96.5" width="179" height="27"/><text x="980" y="115">Fee Income</text></g><g class="dg-item"><rect x="970.5" y="132.5" width="179" height="27"/><text x="980" y="151">Credit Risk</text></g><g class="dg-item"><rect x="970.5" y="168.5" width="179" height="27"/><text x="980" y="187">Customers</text></g><g class="dg-item"><rect x="970.5" y="204.5" width="179" height="27"/><text x="980" y="223">Price Change</text></g><g class="dg-item"><rect x="970.5" y="240.5" width="179" height="27"/><text x="980" y="259">Data Checks</text></g></svg></div>
+    <figcaption class="label mt-10">Fig. — Data flow, source to report. Stack: Power BI · Power Query (M) · DAX · Star schema · Reconciliation checks</figcaption>
+  </figure>
+  <div class="cs-body">
+    <aside class="toc" aria-label="On this page"><span class="label">On this page</span><ol><li><a href="#question">The business question</a></li><li><a href="#findings">What the data showed</a></li><li><a href="#cleaning">Data cleaning in Power Query</a></li><li><a href="#model">Data model</a></li><li><a href="#validation">DAX measures &amp; validation</a></li><li><a href="#recommendations">Recommendations &amp; limits</a></li></ol></aside>
+    <article class="article"><section id="question" aria-labelledby="question-h"><h2 id="question-h">The business question</h2>
+<p>Leadership disagreed about 2025. The <strong>Head of Retail</strong> called it the best year
+for fee income, thanks to the July 2024 rise in the monthly checking fee from $5 to $12. The
+<strong>CFO</strong> said overall results got worse, with customers leaving and credit losses rising.</p>
+<p>The analysis tests both claims and recommends whether to keep the fee, and what to do about
+customers and credit risk in 2026. Before looking at any values, each claim was turned into
+neutral questions (an issue tree), with 14 KPIs and written hypotheses.</p></section><section id="findings" aria-labelledby="findings-h"><h2 id="findings-h">What the data showed</h2>
+<figure class="shot"><img src="/assets/img/harborview-overview-960.webp" srcset="/assets/img/harborview-overview-960.webp 960w, /assets/img/harborview-overview-1600.webp 1600w" sizes="(max-width: 800px) 100vw, 760px" width="1600" height="900" loading="lazy" decoding="async" alt="Overview page: fee income, credit losses and measurable result by year, 2023–2025"><figcaption class="label">Overview page: fee income, credit losses and measurable result by year, 2023–2025</figcaption></figure>
+<ol>
+<li><strong>Fee income rose 2.6×</strong>, from $0.45M (2023) to $1.16M (2025), because of the price,
+not more customers: accounts paying the fee fell from 8,803 to 7,994.</li>
+<li><strong>The price rise very likely cost customers.</strong> Mass checking closures went from 0.39%
+to 3.05% a month in the first nine months at $12, while fee-free customers stayed flat. The jump
+started the week of the change, hit only checking, and appeared in every region: about 2,640
+extra closures by December 2025.</li>
+<li><strong>The fee is still a net gain, but a shrinking one:</strong> about +$743K after an estimated
+$0.29M of lost revenue, with the monthly gain falling from $59K to $32K.</li>
+<li><strong>The measurable result fell from +$2.56M to −$0.41M</strong> because gross credit losses rose
+ninefold, from $0.52M to $4.65M, not because of the fee.</li>
+<li><strong>Three quarters of 2025 credit losses came from the East region.</strong> East branches
+roughly tripled lending from early 2024, about half of it to borrowers scoring under 650; their
+2024 loans defaulted 10.5% of the time within a year, against 2.1% elsewhere.</li>
+</ol>
+<figure class="shot"><img src="/assets/img/harborview-credit-risk-960.webp" srcset="/assets/img/harborview-credit-risk-960.webp 960w, /assets/img/harborview-credit-risk-1600.webp 1600w" sizes="(max-width: 800px) 100vw, 760px" width="1600" height="900" loading="lazy" decoding="async" alt="Credit Risk page: where the 2025 credit losses came from"><figcaption class="label">Credit Risk page: where the 2025 credit losses came from</figcaption></figure>
+<p><strong>Verdict:</strong> both leaders were partly right. Fee income did reach a record, but credit
+losses in East turned the result negative.</p></section><section id="cleaning" aria-labelledby="cleaning-h"><h2 id="cleaning-h">Data cleaning in Power Query</h2>
+<p>Every column was profiled on the full data set, and 19 problems across four tables were fixed
+and logged, each with how it was found and how many rows it affected. For example:</p>
+<ul>
+<li>120 duplicate customers, 20 duplicate loans and 9,279 duplicate transactions.</li>
+<li>Two date formats in one column: a plain type change would have silently swapped day and month on 549 rows.</li>
+<li>Interest rates stored as percentages instead of decimals, and placeholder credit scores of 0 and 999.</li>
+<li>Transactions dated after the extract date, and 150 transactions on accounts that don't exist.</li>
+</ul></section><section id="model" aria-labelledby="model-h"><h2 id="model-h">Data model</h2>
+<p>A star schema in Import mode, with auto date/time and automatic relationship detection turned
+off. Every relationship is defined by hand, one-to-many and single-direction.</p>
+<div class="table-scroll"><table>
+<thead><tr><th>Table</th><th>Rows</th><th>Role</th></tr></thead>
+<tbody>
+<tr><td>Transactions</td><td>2,319,645</td><td>Fact: payments, fees and transfers</td></tr>
+<tr><td>Loans</td><td>5,300</td><td>Fact: amount, rate, balance, status</td></tr>
+<tr><td>Accounts</td><td>36,605</td><td>Dimension between Customers and Transactions</td></tr>
+<tr><td>Customers</td><td>20,000</td><td>Dimension: segment, region, income band</td></tr>
+<tr><td>Branches</td><td>25</td><td>Dimension: branch, city, region</td></tr>
+<tr><td>Products</td><td>6</td><td>Dimension: checking, savings, card, three loan types</td></tr>
+<tr><td>Date</td><td>2,557</td><td>Marked date table, 2019–2025</td></tr>
+</tbody></table></div>
+<p>Two design decisions worth calling out:</p>
+<ul>
+<li><strong>Two dates on Loans, one active.</strong> The issue date drives volume and default rate by vintage;
+the default date is an inactive relationship switched on with <code>USERELATIONSHIP</code> inside the loss measures.</li>
+<li><strong>No Branches → Customers relationship.</strong> It would create two filter paths to Loans
+(issuing branch vs. home branch), so customer geography uses Customers[Region] instead.</li>
+</ul></section><section id="validation" aria-labelledby="validation-h"><h2 id="validation-h">DAX measures &amp; validation</h2>
+<p>Measures are grouped into folders with descriptions, and include month-end customer snapshots,
+churn and reactivation flows, a 12-month default rate by loan vintage, and a control-group
+estimate of the closures caused by the price change.</p>
+<figure class="shot"><img src="/assets/img/harborview-price-change-960.webp" srcset="/assets/img/harborview-price-change-960.webp 960w, /assets/img/harborview-price-change-1600.webp 1600w" sizes="(max-width: 800px) 100vw, 760px" width="1600" height="900" loading="lazy" decoding="async" alt="Price Change page: did the $12 fee pay off after lost customers?"><figcaption class="label">Price Change page: did the $12 fee pay off after lost customers?</figcaption></figure>
+<p>Every KPI was reconciled against totals calculated outside Power BI, and against identities that
+must hold every month: <em>fee income = paying accounts × average fee</em>, and <em>customers at end =
+start + new + returning − leavers</em>. All checks return zero and are shown on a dedicated
+Data Checks page in the report.</p></section><section id="recommendations" aria-labelledby="recommendations-h"><h2 id="recommendations-h">Recommendations &amp; limits</h2>
+<ol>
+<li><strong>Tighten credit approval in East now:</strong> bring the share of sub-650 loans back to the
+12–16% seen elsewhere and review late East loans one by one.</li>
+<li><strong>Keep the $12 fee, but protect the Mass base:</strong> record why customers leave and test a
+fee waiver for active customers on a random group first.</li>
+<li><strong>Investigate the July 2025 chargebacks</strong> ($373K, not confirmed as fraud) and fix the data gaps.</li>
+</ol>
+<p>The report never calls the result “profit”: the data has no operating costs, deposit interest or
+loan-loss provisions, and losses are gross because there is no recovery data. Harborview is a
+fictional bank on a simulated dataset; no real customer information is used.</p></section></article>
+  </div>
+  <nav class="pager" aria-label="More projects">
+    <a href="/projects/healthcare-lakehouse/"><span class="label">← Previous</span><span class="t">Healthcare Lakehouse on Databricks</span></a>
+    <a href="/projects/sql-data-warehouse/"><span class="label">Next →</span><span class="t">SQL Server Medallion Data Warehouse</span></a>
+  </nav>
+</div>
+</main>
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="m0">© 2026 Abdullah Alhaddad · Data Engineer · Ankara, Türkiye</p>
+    <ul>
+      <li><a href="https://github.com/alhaddad-a" rel="me noopener" target="_blank">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" rel="me noopener" target="_blank">LinkedIn</a></li>
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+    </ul>
+  </div>
+</footer>
+<script src="/assets/js/main.js?v=45e721a26a" defer></script>
+</body>
+</html>

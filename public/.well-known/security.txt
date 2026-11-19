@@ -1,0 +1,4 @@
+Contact: mailto:alhaddad.a.hani@gmail.com
+Expires: 2027-11-19T00:00:00Z
+Preferred-Languages: en
+Canonical: https://alhaddad-a.vercel.app/.well-known/security.txt

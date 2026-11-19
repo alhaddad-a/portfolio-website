@@ -97,7 +97,7 @@ Then use *URL inspection* on the homepage and each `/projects/...` page → *Req
 
 **C. Link to the site from your profiles.** This is the fastest way for Google to discover the site:
 - LinkedIn → *Edit intro* → *Website*, and add it to the *Featured* section.
-- GitHub → profile *Website* field ✅ (done), plus a line in your profile README.
+- GitHub → profile *Website* field (github.com/settings/profile), plus a line in your profile README.
 - Add a link back to the matching case-study page in each project repo's README.
 
 **D. Optional extras:** Bing Webmaster Tools (it can import from Search Console), and

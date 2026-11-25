@@ -386,6 +386,10 @@ hospitals and procedures, and billing links back to admissions.</p>"""),
         "stack": ["Power BI", "Power Query (M)", "DAX", "Star schema", "Reconciliation checks"],
         "langs": ["DAX", "Power Query M"],
         "repo": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis",
+        "docs": [
+            ("Full report (PDF)", "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/04_outputs/Dashboard.pdf"),
+            ("CFO memo (PDF)", "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/04_outputs/CFO_Memo.pdf"),
+        ],
         "metrics": [("2.3M", "transactions analysed"), ("19", "data issues fixed"), ("6", "report pages")],
         "diagram": [
             {"tone": "src", "head": "Raw data", "sub": "9 CSV files · 2023–2025",
@@ -1344,7 +1348,7 @@ def page_profile(idx: int) -> str:
       <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/projects/">Projects</a></li><li aria-current="page">Project {n:02d}</li></ol></nav>
       <h1>{escape(CARDS[idx][0])}</h1>
       <p class="pf-intro">{INTROS[idx]}</p>
-      <p class="pf-links"><a class="btn btn-line" href="{p['repo']}" target="_blank" rel="noopener">Source code on GitHub ↗</a></p>
+      <p class="pf-links"><a class="btn btn-line" href="{p['repo']}" target="_blank" rel="noopener">Source code on GitHub ↗</a>{"".join(f' <a class="btn btn-line" href="{u}" target="_blank" rel="noopener">{escape(t)} ↗</a>' for t, u in p.get("docs", []))}</p>
     </header>
     {PROFILES[idx]()}
     <nav class="pager" aria-label="Other projects">

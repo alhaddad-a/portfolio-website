@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WH-10 · Order dates stored as integers — some of them not dates — Abdullah Alhaddad</title>
+<meta name="description" content="WH-10: Order dates stored as integers — some of them not dates. Order, ship and due dates arrive as eight-digit integers. Nineteen order dates are 0 or have t">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/register/wh-10/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="WH-10 · Order dates stored as integers — some of them not dates — Abdullah Alhaddad">
+<meta property="og:description" content="WH-10: Order dates stored as integers — some of them not dates. Order, ship and due dates arrive as eight-digit integers. Nineteen order dates are 0 or have t">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/register/wh-10/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="WH-10 · Order dates stored as integers — some of them not dates — Abdullah Alhaddad">
+<meta name="twitter:description" content="WH-10: Order dates stored as integers — some of them not dates. Order, ship and due dates arrive as eight-digit integers. Nineteen order dates are 0 or have t">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Investigations", "item": "https://alhaddad-a.vercel.app/investigations/"}, {"@type": "ListItem", "position": 2, "name": "WH-10", "item": "https://alhaddad-a.vercel.app/register/wh-10/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="entry">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/investigations/">Investigations</a></li><li aria-current="page">WH-10</li></ol></nav>
+    <header class="e-head">
+      <p class="e-meta"><span class="e-id">WH-10</span><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></p>
+      <h1>Order dates stored as integers — some of them not dates</h1>
+      <p class="e-src">SQL Server warehouse · Databricks pipeline</p>
+    </header>
+    <section class="qa"><h2>What was wrong</h2><p>Order, ship and due dates arrive as eight-digit integers. Nineteen order dates are 0 or have the wrong number of digits.</p><p class="muted">All 60,398 order dates are integers. 19 can’t be dates at all: 17 zeros, plus 32154 and 5489.</p></section><section class="qa qa-ev"><h2>Evidence</h2><figure class="e-spec"><div class="sp sp-pair">
+  <p class="sp-cap">As it arrived <span>sales_details.csv · sls_order_dt</span> <span class="sp-cap-r">As it leaves</span></p>
+  <ul class="pairs"><li><code class="raw">20101229</code><span class="arr" aria-hidden="true">→</span><code class="clean">2010-12-29</code></li><li><code class="raw">0</code><span class="arr" aria-hidden="true">→</span><code class="clean">NULL</code></li><li><code class="raw">32154</code><span class="arr" aria-hidden="true">→</span><code class="clean">NULL</code></li><li><code class="raw">5489</code><span class="arr" aria-hidden="true">→</span><code class="clean">NULL</code></li></ul>
+</div></figure></section><section class="qa"><h2>How it was detected</h2><p>Recomputed from the raw file, which is public in the project repository.</p></section><section class="qa"><h2>Why it matters</h2><p>Integer dates can’t be filtered by month or compared with real dates; casting a bad one fails the whole load.</p></section><section class="qa"><h2>What was done</h2><div class="fix"><p class="fix-h">SQL Server Medallion Data Warehouse</p><p>Invalid values become NULL; the rest are cast through text to DATE.</p><details class="code"><summary>Show the T-SQL</summary><pre><code>CASE 
+    WHEN sls_order_dt = 0 OR LEN(sls_order_dt) != 8 THEN NULL
+    ELSE CAST(CAST(sls_order_dt AS VARCHAR) AS DATE)
+END AS sls_order_dt,</code></pre></details></div><div class="fix"><p class="fix-h">Databricks Medallion Pipeline</p><p>Same rule with an explicit yyyyMMdd pattern.</p><details class="code"><summary>Show the PySpark</summary><pre><code>F.when(
+    (col(&quot;sls_order_dt&quot;) == 0) | (length(col(&quot;sls_order_dt&quot;)) != 8),
+    None
+).otherwise(F.to_date(col(&quot;sls_order_dt&quot;).cast(&quot;string&quot;), &quot;yyyyMMdd&quot;))</code></pre></details></div></section><section class="qa"><h2>How it was verified</h2><p>The same rule as a check on the raw table:</p><details class="code"><summary>Show the check</summary><pre><code>-- Check for Invalid Dates
+-- Expectation: No Invalid Dates
+SELECT 
+    NULLIF(sls_due_dt, 0) AS sls_due_dt 
+FROM bronze.crm_sales_details
+WHERE sls_due_dt &lt;= 0 
+    OR LEN(sls_due_dt) != 8 
+    OR sls_due_dt &gt; 20500101 
+    OR sls_due_dt &lt; 19000101;</code></pre></details></section>
+    <section class="qa refs">
+      <h2>References</h2>
+      <dl class="ref-list">
+        <div><dt>File</dt><dd><code>sales_details.csv</code></dd></div>
+        <div><dt>Column</dt><dd><code>sls_order_dt</code></dd></div>
+        <div><dt>Layer</dt><dd>Bronze → Silver</dd></div>
+        <div><dt>Rows affected</dt><dd>19 of 60,398</dd></div>
+        <div><dt>Status</dt><dd>Fixed in the pipeline, every time it runs.</dd></div>
+        <div><dt>Project</dt><dd><ul><li><a href="/projects/sql-data-warehouse/">SQL Server Medallion Data Warehouse</a></li><li><a href="/projects/databricks-medallion-pipeline/">Databricks Medallion Pipeline</a></li></ul></dd></div>
+      </dl>
+      <p class="cites-h">Sources in the repositories</p>
+      <ul class="cites"><li><a href="https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/sales_details.csv" target="_blank" rel="noopener">sales_details.csv (raw file) ↗</a></li><li><a href="https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L135" target="_blank" rel="noopener">proc_load_silver.sql, line 135 ↗</a></li><li><a href="https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L92" target="_blank" rel="noopener">quality_checks_silver.sql, line 92 ↗</a></li><li><a href="https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_sales_details.ipynb" target="_blank" rel="noopener">silver_crm_sales_details.ipynb ↗</a></li></ul>
+    </section>
+    <nav class="pager" aria-label="More investigations">
+      <a href="/register/wh-09/"><span>← WH-09</span>Products that end before they start</a>
+      <a href="/register/wh-11/"><span>WH-11 →</span>Sales amounts that don’t equal quantity × price</a>
+    </nav>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

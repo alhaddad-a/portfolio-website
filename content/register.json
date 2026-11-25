@@ -1,0 +1,2715 @@
+{
+ "_note": "Generated from verified evidence; see tools/README.md. Counts are rows in the raw source files.",
+ "entries": [
+  {
+   "id": "WH-01",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "cust_info.csv",
+   "column": "cst_firstname, cst_lastname",
+   "layer": "Bronze → Silver",
+   "kind": "whitespace",
+   "title": "Spaces before and after customer names",
+   "raw": " Jon",
+   "expected": "Jon",
+   "rows": 29,
+   "of": 18494,
+   "rows_note": "17 first names and 22 last names carry a leading or trailing space; 29 rows in total.",
+   "spec": {
+    "type": "chars",
+    "also": [
+     [
+      "Yang ",
+      "Yang"
+     ],
+     [
+      "  Zhu",
+      "Zhu"
+     ]
+    ]
+   },
+   "wrong": "The CRM export stores names with stray spaces: row 1 is “ Jon”, “Yang ”. Nothing about the value looks wrong in a table view.",
+   "impact": "“ Jon” and “Jon” are different strings. They split a GROUP BY, fail an equality join and sort apart from each other.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "TRIM() on both name columns in the Silver load.",
+     "code": "TRIM(cst_firstname) AS cst_firstname,\nTRIM(cst_lastname) AS cst_lastname,"
+    },
+    {
+     "case": 2,
+     "text": "Trims every string column of the table in one loop, not just the ones known to be dirty.",
+     "code": "for field in df.schema.fields:\n    if isinstance(field.dataType, StringType):\n        df = df.withColumn(field.name, trim(col(field.name)))"
+    }
+   ],
+   "test": {
+    "note": "The repository’s whitespace check runs on cst_key; the name columns are trimmed on every load.",
+    "sql": "-- Check for Unwanted Spaces\n-- Expectation: No Results\nSELECT \n    cst_key \nFROM silver.crm_cust_info\nWHERE cst_key != TRIM(cst_key);"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "cust_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/cust_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 51",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L51"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 37",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L37"
+    },
+    {
+     "label": "silver_crm_cust_info.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_cust_info.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-02",
+   "source": "wh",
+   "fixed_in": [
+    1
+   ],
+   "file": "cust_info.csv",
+   "column": "cst_id",
+   "layer": "Bronze → Silver",
+   "kind": "duplicates",
+   "title": "One customer, two records",
+   "raw": "29433",
+   "expected": "29433 — the latest record only",
+   "rows": 6,
+   "of": 18494,
+   "rows_note": "5 customer IDs appear more than once: 6 extra rows.",
+   "spec": {
+    "type": "dupes",
+    "rows": [
+     [
+      "29433",
+      "AW00029433",
+      "",
+      "",
+      "M",
+      "M",
+      "2026-01-25"
+     ],
+     [
+      "29433",
+      "AW00029433",
+      "Thomas",
+      "King",
+      "M",
+      "M",
+      "2026-01-27"
+     ]
+    ],
+    "cols": [
+     "cst_id",
+     "cst_key",
+     "cst_firstname",
+     "cst_lastname",
+     "marital",
+     "gndr",
+     "cst_create_date"
+    ],
+    "keep": 1
+   },
+   "wrong": "Some customers were exported twice. For ID 29433 the first copy has no name at all; the second, two days newer, is complete.",
+   "impact": "A duplicate key in a dimension doubles every fact row that joins to it.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Number each customer’s records by create date, newest first, and keep only the first.",
+     "code": "ROW_NUMBER() OVER (PARTITION BY cst_id ORDER BY cst_create_date DESC) AS flag_last\n...\nWHERE flag_last = 1; -- Select the most recent record per customer"
+    }
+   ],
+   "test": {
+    "sql": "-- Check for NULLs or Duplicates in Primary Key\n-- Expectation: No Results\nSELECT \n    cst_id,\n    COUNT(*) \nFROM silver.crm_cust_info\nGROUP BY cst_id\nHAVING COUNT(*) > 1 OR cst_id IS NULL;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "cust_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/cust_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 67",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L67"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 30",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L30"
+    }
+   ]
+  },
+  {
+   "id": "WH-03",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "cust_info.csv",
+   "column": "cst_id",
+   "layer": "Bronze → Silver",
+   "kind": "missing",
+   "title": "Customer rows with no customer ID",
+   "raw": "",
+   "expected": "row excluded",
+   "rows": 4,
+   "of": 18494,
+   "spec": {
+    "type": "empty",
+    "label": "cst_id"
+   },
+   "wrong": "Four rows arrive with an empty primary key.",
+   "impact": "A row without a key can’t be joined to sales or to the ERP tables, and it can’t be deduplicated.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Filtered out before deduplication.",
+     "code": "WHERE cst_id IS NOT NULL"
+    },
+    {
+     "case": 2,
+     "text": "Same rule in PySpark.",
+     "code": "df = df.filter(col(\"cst_id\").isNotNull())"
+    }
+   ],
+   "test": {
+    "sql": "-- Check for NULLs or Duplicates in Primary Key\n-- Expectation: No Results\nSELECT \n    cst_id,\n    COUNT(*) \nFROM silver.crm_cust_info\nGROUP BY cst_id\nHAVING COUNT(*) > 1 OR cst_id IS NULL;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "cust_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/cust_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 69",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L69"
+    },
+    {
+     "label": "silver_crm_cust_info.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_cust_info.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-04",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "cust_info.csv",
+   "column": "cst_marital_status",
+   "layer": "Bronze → Silver",
+   "kind": "codes",
+   "title": "Marital status stored as one-letter codes",
+   "raw": "S",
+   "expected": "Single",
+   "rows": 18494,
+   "of": 18494,
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "M",
+      10013,
+      "Married"
+     ],
+     [
+      "S",
+      8474,
+      "Single"
+     ],
+     [
+      "",
+      7,
+      "n/a"
+     ]
+    ]
+   },
+   "wrong": "The CRM stores marital status as M and S, and leaves seven rows empty.",
+   "impact": "Codes are fine inside one system. In a warehouse that joins two systems, everybody reading the table has to know what they mean.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Mapped to readable values; anything else becomes n/a.",
+     "code": "WHEN UPPER(TRIM(cst_marital_status)) = 'S' THEN 'Single'\nWHEN UPPER(TRIM(cst_marital_status)) = 'M' THEN 'Married'\nELSE 'n/a'"
+    },
+    {
+     "case": 2,
+     "text": "Same mapping in PySpark.",
+     "code": "F.when(F.upper(F.col(\"cst_marital_status\")) == \"S\", \"Single\")\n .when(F.upper(F.col(\"cst_marital_status\")) == \"M\", \"Married\")\n .otherwise(\"n/a\")"
+    }
+   ],
+   "test": {
+    "note": "A consistency review rather than a pass/fail check:",
+    "sql": "-- Data Standardization & Consistency\nSELECT DISTINCT \n    cst_marital_status \nFROM silver.crm_cust_info;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "cust_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/cust_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 54",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L54"
+    },
+    {
+     "label": "silver_crm_cust_info.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_cust_info.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-05",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "cust_info.csv",
+   "column": "cst_gndr",
+   "layer": "Silver → Gold",
+   "kind": "missing",
+   "title": "Gender missing in a quarter of CRM customers",
+   "raw": "",
+   "expected": "taken from the ERP",
+   "rows": 4578,
+   "of": 18494,
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "M",
+      7068,
+      "Male"
+     ],
+     [
+      "F",
+      6848,
+      "Female"
+     ],
+     [
+      "",
+      4578,
+      "n/a → ERP value"
+     ]
+    ]
+   },
+   "wrong": "4,578 CRM customers have no gender. The ERP file CUST_AZ12 has its own gender column for the same customers.",
+   "impact": "Two systems disagree or have gaps; the model has to decide which one wins, and say so.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Silver maps M/F to Male/Female. Gold treats the CRM as the primary source and falls back to the ERP when the CRM says n/a.",
+     "code": "WHEN ci.cst_gndr != 'n/a' THEN ci.cst_gndr -- CRM is the primary source for gender\nELSE COALESCE(ca.gen, 'n/a')  \t\t\t   -- Fallback to ERP data"
+    },
+    {
+     "case": 2,
+     "text": "The same precedence rule in the Gold notebook.",
+     "code": "CASE\n    WHEN ci.gender <> 'n/a' THEN ci.gender\n    ELSE COALESCE(ca.gender, 'n/a')\nEND AS gender,"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "cust_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/cust_info.csv"
+    },
+    {
+     "label": "ddl_gold.sql, line 34",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/gold/ddl_gold.sql#L34"
+    },
+    {
+     "label": "gold_dim_customers.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/gold_layer/gold_dim_customers.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-06",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "prd_info.csv",
+   "column": "prd_key",
+   "layer": "Bronze → Silver",
+   "kind": "keys",
+   "title": "Two keys packed into one product key",
+   "raw": "CO-RF-FR-R92B-58",
+   "expected": "cat_id CO_RF · prd_key FR-R92B-58",
+   "rows": 397,
+   "of": 397,
+   "spec": {
+    "type": "split",
+    "parts": [
+     [
+      "CO-RF",
+      "CO_RF",
+      "cat_id — joins the ERP category table"
+     ],
+     [
+      "-",
+      "",
+      ""
+     ],
+     [
+      "FR-R92B-58",
+      "FR-R92B-58",
+      "prd_key — joins sales"
+     ]
+    ]
+   },
+   "wrong": "The first five characters of every product key are a category code, written with a hyphen where the ERP category table uses an underscore.",
+   "impact": "Without splitting the key, products can’t be joined to their category, and sales can’t be joined to products.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Split into two columns and align the separator with the ERP.",
+     "code": "REPLACE(SUBSTRING(prd_key, 1, 5), '-', '_') AS cat_id, -- Extract category ID\nSUBSTRING(prd_key, 7, LEN(prd_key)) AS prd_key,        -- Extract product key"
+    },
+    {
+     "case": 2,
+     "text": "Same split in PySpark.",
+     "code": "df = df.withColumn(\"cat_id\", F.regexp_replace(F.substring(col(\"prd_key\"), 1, 5), \"-\", \"_\"))\ndf = df.withColumn(\"prd_key\", F.substring(col(\"prd_key\"), 7, F.length(col(\"prd_key\"))))"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "prd_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/prd_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 93",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L93"
+    },
+    {
+     "label": "silver_crm_prd_info.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_prd_info.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-07",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "prd_info.csv",
+   "column": "prd_line",
+   "layer": "Bronze → Silver",
+   "kind": "codes",
+   "title": "Product line codes with a trailing space",
+   "raw": "R ",
+   "expected": "Road",
+   "rows": 397,
+   "of": 397,
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "R ",
+      162,
+      "Road"
+     ],
+     [
+      "M ",
+      112,
+      "Mountain"
+     ],
+     [
+      "S ",
+      54,
+      "Other Sales"
+     ],
+     [
+      "T ",
+      52,
+      "Touring"
+     ],
+     [
+      "",
+      17,
+      "n/a"
+     ]
+    ]
+   },
+   "wrong": "Every product line code is one letter followed by a space; 17 products have none.",
+   "impact": "A comparison with 'R' fails on 'R '. The space is invisible in most tools.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Trim, upper-case, then map each code to its name.",
+     "code": "WHEN UPPER(TRIM(prd_line)) = 'M' THEN 'Mountain'\nWHEN UPPER(TRIM(prd_line)) = 'R' THEN 'Road'\nWHEN UPPER(TRIM(prd_line)) = 'S' THEN 'Other Sales'\nWHEN UPPER(TRIM(prd_line)) = 'T' THEN 'Touring'\nELSE 'n/a'"
+    },
+    {
+     "case": 2,
+     "text": "Trimmed by the all-columns loop, then mapped.",
+     "code": "F.when(F.upper(col(\"prd_line\")) == \"M\", \"Mountain\")\n .when(F.upper(col(\"prd_line\")) == \"R\", \"Road\")"
+    }
+   ],
+   "test": {
+    "note": "A consistency review:",
+    "sql": "-- Data Standardization & Consistency\nSELECT DISTINCT \n    prd_line \nFROM silver.crm_prd_info;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "prd_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/prd_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 99",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L99"
+    },
+    {
+     "label": "silver_crm_prd_info.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_prd_info.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-08",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "prd_info.csv",
+   "column": "prd_cost",
+   "layer": "Bronze → Silver",
+   "kind": "missing",
+   "title": "Products with no cost",
+   "raw": "",
+   "expected": "0",
+   "rows": 2,
+   "of": 397,
+   "spec": {
+    "type": "empty",
+    "label": "prd_cost"
+   },
+   "wrong": "Two products arrive with an empty cost.",
+   "impact": "A NULL cost makes any margin or cost total silently NULL too.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Defaulted to zero.",
+     "code": "ISNULL(prd_cost, 0) AS prd_cost,"
+    },
+    {
+     "case": 2,
+     "text": "Same default in PySpark.",
+     "code": "df = df.withColumn(\"prd_cost\", F.coalesce(col(\"prd_cost\"), F.lit(0)))"
+    }
+   ],
+   "test": {
+    "sql": "-- Check for NULLs or Negative Values in Cost\n-- Expectation: No Results\nSELECT \n    prd_cost \nFROM silver.crm_prd_info\nWHERE prd_cost < 0 OR prd_cost IS NULL;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "prd_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/prd_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 96",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L96"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 68",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L68"
+    },
+    {
+     "label": "silver_crm_prd_info.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_prd_info.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-09",
+   "source": "wh",
+   "fixed_in": [
+    1
+   ],
+   "file": "prd_info.csv",
+   "column": "prd_start_dt, prd_end_dt",
+   "layer": "Bronze → Silver",
+   "kind": "impossible",
+   "title": "Products that end before they start",
+   "raw": "2011-07-01 → 2007-12-28",
+   "expected": "end = next start − 1 day",
+   "rows": 200,
+   "of": 397,
+   "spec": {
+    "type": "order",
+    "a": [
+     "prd_start_dt",
+     "2011-07-01"
+    ],
+    "b": [
+     "prd_end_dt",
+     "2007-12-28"
+    ],
+    "key": "AC-HE-HL-U509-R · Sport-100 Helmet- Red"
+   },
+   "wrong": "Half of the product history rows have an end date earlier than their start date.",
+   "impact": "Product history (which price applied when) can’t be trusted if a version ends before it begins.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Ignore the stored end date. Rebuild it as the day before the next version of the same product starts.",
+     "code": "CAST(\n    LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt) - 1 \n    AS DATE\n) AS prd_end_dt -- Calculate end date as one day before the next start date"
+    }
+   ],
+   "test": {
+    "sql": "-- Check for Invalid Date Orders (Start Date > End Date)\n-- Expectation: No Results\nSELECT \n    * \nFROM silver.crm_prd_info\nWHERE prd_end_dt < prd_start_dt;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "prd_info.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/prd_info.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 106",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L106"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 80",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L80"
+    }
+   ]
+  },
+  {
+   "id": "WH-10",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "sales_details.csv",
+   "column": "sls_order_dt",
+   "layer": "Bronze → Silver",
+   "kind": "format",
+   "title": "Order dates stored as integers — some of them not dates",
+   "raw": "20101229",
+   "expected": "2010-12-29",
+   "rows": 19,
+   "of": 60398,
+   "rows_note": "All 60,398 order dates are integers. 19 can’t be dates at all: 17 zeros, plus 32154 and 5489.",
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "20101229",
+      "2010-12-29"
+     ],
+     [
+      "0",
+      "NULL"
+     ],
+     [
+      "32154",
+      "NULL"
+     ],
+     [
+      "5489",
+      "NULL"
+     ]
+    ]
+   },
+   "wrong": "Order, ship and due dates arrive as eight-digit integers. Nineteen order dates are 0 or have the wrong number of digits.",
+   "impact": "Integer dates can’t be filtered by month or compared with real dates; casting a bad one fails the whole load.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Invalid values become NULL; the rest are cast through text to DATE.",
+     "code": "CASE \n    WHEN sls_order_dt = 0 OR LEN(sls_order_dt) != 8 THEN NULL\n    ELSE CAST(CAST(sls_order_dt AS VARCHAR) AS DATE)\nEND AS sls_order_dt,"
+    },
+    {
+     "case": 2,
+     "text": "Same rule with an explicit yyyyMMdd pattern.",
+     "code": "F.when(\n    (col(\"sls_order_dt\") == 0) | (length(col(\"sls_order_dt\")) != 8),\n    None\n).otherwise(F.to_date(col(\"sls_order_dt\").cast(\"string\"), \"yyyyMMdd\"))"
+    }
+   ],
+   "test": {
+    "note": "The same rule as a check on the raw table:",
+    "sql": "-- Check for Invalid Dates\n-- Expectation: No Invalid Dates\nSELECT \n    NULLIF(sls_due_dt, 0) AS sls_due_dt \nFROM bronze.crm_sales_details\nWHERE sls_due_dt <= 0 \n    OR LEN(sls_due_dt) != 8 \n    OR sls_due_dt > 20500101 \n    OR sls_due_dt < 19000101;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "sales_details.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/sales_details.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 135",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L135"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 92",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L92"
+    },
+    {
+     "label": "silver_crm_sales_details.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_sales_details.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-11",
+   "source": "wh",
+   "fixed_in": [
+    1
+   ],
+   "file": "sales_details.csv",
+   "column": "sls_sales",
+   "layer": "Bronze → Silver",
+   "kind": "arithmetic",
+   "title": "Sales amounts that don’t equal quantity × price",
+   "raw": "35 = 2 × 35",
+   "expected": "70",
+   "rows": 23,
+   "of": 60398,
+   "rows_note": "23 rows where the amount is missing, zero or negative, or doesn’t equal quantity × price.",
+   "spec": {
+    "type": "arith",
+    "rows": [
+     [
+      "SO58335",
+      "35",
+      "2",
+      "35",
+      "70"
+     ],
+     [
+      "SO61570",
+      "-18",
+      "1",
+      "9",
+      "9"
+     ],
+     [
+      "SO61548",
+      "",
+      "1",
+      "9",
+      "9"
+     ]
+    ]
+   },
+   "wrong": "The sales amount is sometimes missing, negative, or simply doesn’t match the quantity and price on the same line.",
+   "impact": "Revenue is the number every report starts from. If the line total and its parts disagree, one of them is wrong.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "When the amount is missing, not positive or inconsistent, recompute it from quantity × |price|.",
+     "code": "WHEN sls_sales IS NULL OR sls_sales <= 0 OR sls_sales != sls_quantity * ABS(sls_price) \n\tTHEN sls_quantity * ABS(sls_price)\nELSE sls_sales"
+    }
+   ],
+   "test": {
+    "sql": "-- Check Data Consistency: Sales = Quantity * Price\n-- Expectation: No Results\nSELECT DISTINCT \n    sls_sales,\n    sls_quantity,\n    sls_price \nFROM silver.crm_sales_details\nWHERE sls_sales != sls_quantity * sls_price\n   OR sls_sales IS NULL \n   OR sls_quantity IS NULL \n   OR sls_price IS NULL\n   OR sls_sales <= 0 \n   OR sls_quantity <= 0 \n   OR sls_price <= 0\nORDER BY sls_sales, sls_quantity, sls_price;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "sales_details.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/sales_details.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 147",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L147"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 103",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L103"
+    }
+   ]
+  },
+  {
+   "id": "WH-12",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "sales_details.csv",
+   "column": "sls_price",
+   "layer": "Bronze → Silver",
+   "kind": "missing",
+   "title": "Prices missing or negative",
+   "raw": "-769",
+   "expected": "769 (sales ÷ quantity)",
+   "rows": 12,
+   "of": 60398,
+   "rows_note": "12 prices are empty, zero or negative (5 negative).",
+   "spec": {
+    "type": "empty",
+    "label": "sls_price"
+   },
+   "wrong": "Twelve sale lines have no usable unit price.",
+   "impact": "Price feeds every average-price and margin figure; a negative one flips the sign of whatever it touches.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Derive the price from the line total.",
+     "code": "WHEN sls_price IS NULL OR sls_price <= 0 \n\tTHEN sls_sales / NULLIF(sls_quantity, 0)\nELSE sls_price  -- Derive price if original value is invalid"
+    },
+    {
+     "case": 2,
+     "text": "Same derivation in PySpark, guarding against a zero quantity.",
+     "code": "F.when(\n    (col(\"sls_price\").isNull()) | (col(\"sls_price\") <= 0),\n    F.when(\n        col(\"sls_quantity\") != 0,\n        col(\"sls_sales\") / col(\"sls_quantity\")\n    ).otherwise(None)\n).otherwise(col(\"sls_price\"))"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "sales_details.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_crm/sales_details.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 154",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L154"
+    },
+    {
+     "label": "silver_crm_sales_details.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/crm/silver_crm_sales_details.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-13",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "CUST_AZ12.csv",
+   "column": "CID",
+   "layer": "Bronze → Silver",
+   "kind": "keys",
+   "title": "ERP customer keys with a three-letter prefix",
+   "raw": "NASAW00011000",
+   "expected": "AW00011000",
+   "rows": 11042,
+   "of": 18484,
+   "spec": {
+    "type": "chars",
+    "cut": [
+     0,
+     3
+    ]
+   },
+   "wrong": "The ERP writes the same customer number as the CRM, but 11,042 of them start with NAS.",
+   "impact": "The ERP’s birth dates and genders can’t be joined to CRM customers until the keys match.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Strip the prefix when present.",
+     "code": "WHEN cid LIKE 'NAS%' THEN SUBSTRING(cid, 4, LEN(cid)) -- Remove 'NAS' prefix if present\nELSE cid"
+    },
+    {
+     "case": 2,
+     "text": "Same rule in PySpark.",
+     "code": "F.when(col(\"cid\").startswith(\"NAS\"),\n       F.substring(col(\"cid\"), 4, F.length(col(\"cid\"))))\n .otherwise(col(\"cid\"))"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "CUST_AZ12.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_erp/CUST_AZ12.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 174",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L174"
+    },
+    {
+     "label": "silver_erp_cust_az12.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/erp/silver_erp_cust_az12.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-14",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "CUST_AZ12.csv",
+   "column": "BDATE",
+   "layer": "Bronze → Silver",
+   "kind": "impossible",
+   "title": "Customers born in the future",
+   "raw": "11/20/9999",
+   "expected": "NULL",
+   "rows": 16,
+   "of": 18484,
+   "rows_note": "16 birth dates lie in the future, from 2038 to 9999.",
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "11/20/9999",
+      "NULL"
+     ],
+     [
+      "7/6/2050",
+      "NULL"
+     ],
+     [
+      "10/17/2038",
+      "NULL"
+     ]
+    ]
+   },
+   "wrong": "Sixteen ERP birth dates are in the future; four of them are in the year 9999.",
+   "impact": "A single impossible birth date wrecks an age distribution and any “average age” figure.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Birth dates after today become NULL.",
+     "code": "WHEN bdate > GETDATE() THEN NULL\nELSE bdate"
+    },
+    {
+     "case": 2,
+     "text": "Same rule in PySpark.",
+     "code": "F.when(col(\"bdate\") > F.current_date(), None)\n .otherwise(col(\"bdate\"))"
+    }
+   ],
+   "test": {
+    "sql": "-- Identify Out-of-Range Dates\n-- Expectation: Birthdates between 1924-01-01 and Today\nSELECT DISTINCT \n    bdate \nFROM silver.erp_cust_az12\nWHERE bdate < '1924-01-01' \n   OR bdate > GETDATE();"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "CUST_AZ12.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_erp/CUST_AZ12.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 178",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L178"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 123",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L123"
+    },
+    {
+     "label": "silver_erp_cust_az12.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/erp/silver_erp_cust_az12.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-15",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "CUST_AZ12.csv",
+   "column": "GEN",
+   "layer": "Bronze → Silver",
+   "kind": "codes",
+   "title": "Nine spellings of two genders",
+   "raw": "M ",
+   "expected": "Male",
+   "rows": 18484,
+   "of": 18484,
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "Male",
+      8608,
+      "Male"
+     ],
+     [
+      "Female",
+      8391,
+      "Female"
+     ],
+     [
+      "",
+      1472,
+      "n/a"
+     ],
+     [
+      "F",
+      4,
+      "Female"
+     ],
+     [
+      " ",
+      3,
+      "n/a"
+     ],
+     [
+      "M",
+      3,
+      "Male"
+     ],
+     [
+      "  ",
+      1,
+      "n/a"
+     ],
+     [
+      "M ",
+      1,
+      "Male"
+     ],
+     [
+      "F ",
+      1,
+      "Female"
+     ]
+    ]
+   },
+   "wrong": "The ERP gender column mixes full words, single letters, letters with a trailing space, and values that are only spaces.",
+   "impact": "Counting by gender over this column gives nine groups instead of two (plus unknown).",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Trim, upper-case, accept both forms.",
+     "code": "WHEN UPPER(TRIM(gen)) IN ('F', 'FEMALE') THEN 'Female'\nWHEN UPPER(TRIM(gen)) IN ('M', 'MALE') THEN 'Male'\nELSE 'n/a'"
+    },
+    {
+     "case": 2,
+     "text": "Same rule after the all-columns trim.",
+     "code": "F.when(F.upper(col(\"gen\")).isin(\"F\", \"FEMALE\"), \"Female\")\n .when(F.upper(col(\"gen\")).isin(\"M\", \"MALE\"), \"Male\")\n .otherwise(\"n/a\")"
+    }
+   ],
+   "test": {
+    "note": "A consistency review:",
+    "sql": "-- Data Standardization & Consistency\nSELECT DISTINCT \n    gen \nFROM silver.erp_cust_az12;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "CUST_AZ12.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_erp/CUST_AZ12.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 182",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L182"
+    },
+    {
+     "label": "silver_erp_cust_az12.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/erp/silver_erp_cust_az12.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-16",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "LOC_A101.csv",
+   "column": "CID",
+   "layer": "Bronze → Silver",
+   "kind": "keys",
+   "title": "A hyphen in every location key",
+   "raw": "AW-00011000",
+   "expected": "AW00011000",
+   "rows": 18484,
+   "of": 18484,
+   "spec": {
+    "type": "chars",
+    "cut": [
+     2,
+     3
+    ]
+   },
+   "wrong": "The location file writes customer numbers with a hyphen the other two files don’t use.",
+   "impact": "Without the fix, not one customer gets a country.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Remove the hyphen.",
+     "code": "REPLACE(cid, '-', '') AS cid,"
+    },
+    {
+     "case": 2,
+     "text": "Same rule in PySpark.",
+     "code": "df = df.withColumn(\"cid\", F.regexp_replace(col(\"cid\"), \"-\", \"\"))"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "LOC_A101.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_erp/LOC_A101.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 205",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L205"
+    },
+    {
+     "label": "silver_erp_loc_a101.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/erp/silver_erp_loc_a101.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-17",
+   "source": "wh",
+   "fixed_in": [
+    1,
+    2
+   ],
+   "file": "LOC_A101.csv",
+   "column": "CNTRY",
+   "layer": "Bronze → Silver",
+   "kind": "codes",
+   "title": "One country, three spellings",
+   "raw": "USA",
+   "expected": "United States",
+   "rows": 4994,
+   "of": 18484,
+   "rows_note": "2,591 USA, 1,500 US, 566 DE, 332 empty and 5 made only of spaces.",
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "United States",
+      3391,
+      "United States"
+     ],
+     [
+      "USA",
+      2591,
+      "United States"
+     ],
+     [
+      "US",
+      1500,
+      "United States"
+     ],
+     [
+      "Germany",
+      1214,
+      "Germany"
+     ],
+     [
+      "DE",
+      566,
+      "Germany"
+     ],
+     [
+      "",
+      332,
+      "n/a"
+     ],
+     [
+      "  ",
+      2,
+      "n/a"
+     ],
+     [
+      " ",
+      2,
+      "n/a"
+     ],
+     [
+      "   ",
+      1,
+      "n/a"
+     ]
+    ]
+   },
+   "wrong": "Country names are mixed with ISO-style codes, and some values are empty or only spaces.",
+   "impact": "Sales by country would show the United States three times.",
+   "fixes": [
+    {
+     "case": 1,
+     "text": "Map codes to names; empty or blank becomes n/a.",
+     "code": "WHEN TRIM(cntry) = 'DE' THEN 'Germany'\nWHEN TRIM(cntry) IN ('US', 'USA') THEN 'United States'\nWHEN TRIM(cntry) = '' OR cntry IS NULL THEN 'n/a'\nELSE TRIM(cntry)"
+    },
+    {
+     "case": 2,
+     "text": "Same mapping in PySpark.",
+     "code": "F.when(col(\"cntry\") == \"DE\", \"Germany\")\n .when(col(\"cntry\").isin(\"US\", \"USA\"), \"United States\")\n .when((col(\"cntry\") == \"\") | col(\"cntry\").isNull(), \"n/a\")\n .otherwise(col(\"cntry\"))"
+    }
+   ],
+   "test": {
+    "note": "A consistency review:",
+    "sql": "-- Data Standardization & Consistency\nSELECT DISTINCT \n    cntry \nFROM silver.erp_loc_a101\nORDER BY cntry;"
+   },
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "LOC_A101.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_erp/LOC_A101.csv"
+    },
+    {
+     "label": "proc_load_silver.sql, line 208",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/scripts/silver/proc_load_silver.sql#L208"
+    },
+    {
+     "label": "silver_erp_loc_a101.ipynb",
+     "url": "https://github.com/alhaddad-a/databricks-medallion-pipeline/blob/HEAD/scripts/silver_layer/erp/silver_erp_loc_a101.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "WH-18",
+   "source": "wh",
+   "fixed_in": [
+    1
+   ],
+   "file": "PX_CAT_G1V2.csv",
+   "column": "CAT, SUBCAT, MAINTENANCE",
+   "layer": "Silver",
+   "kind": "whitespace",
+   "title": "Category table: checked, nothing to fix",
+   "raw": "Accessories",
+   "expected": "Accessories",
+   "rows": 0,
+   "of": 37,
+   "spec": {
+    "type": "clean",
+    "query": "WHERE cat != TRIM(cat) OR subcat != TRIM(subcat) OR maintenance != TRIM(maintenance)"
+   },
+   "wrong": "Nothing. The category table is the one source file with no whitespace, code or key problems; it is loaded as it arrives.",
+   "impact": "A clean result is a result too: it is the reason this table can be loaded without transformation.",
+   "fixes": [],
+   "test": {
+    "sql": "-- Check for Unwanted Spaces\n-- Expectation: No Results\nSELECT \n    * \nFROM silver.erp_px_cat_g1v2\nWHERE cat != TRIM(cat) \n   OR subcat != TRIM(subcat) \n   OR maintenance != TRIM(maintenance);"
+   },
+   "status": "clean",
+   "cites": [
+    {
+     "label": "PX_CAT_G1V2.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/datasets/source_erp/PX_CAT_G1V2.csv"
+    },
+    {
+     "label": "quality_checks_silver.sql, line 152",
+     "url": "https://github.com/alhaddad-a/mssql-medallion-data-warehouse/blob/HEAD/tests/quality_checks_silver.sql#L152"
+    }
+   ]
+  },
+  {
+   "id": "HC-01",
+   "source": "hc",
+   "fixed_in": [
+    3
+   ],
+   "file": "patients.csv",
+   "column": "all columns",
+   "layer": "Bronze → Silver",
+   "kind": "duplicates",
+   "title": "A hundred patients listed twice",
+   "raw": "1,M,",
+   "expected": "one row per patient",
+   "rows": 100,
+   "of": 100100,
+   "rows_note": "100,100 rows in; 100,000 after removing exact copies.",
+   "spec": {
+    "type": "count",
+    "in": 100100,
+    "out": 100000,
+    "unit": "patient rows"
+   },
+   "wrong": "The patient file contains 100 rows that are exact copies of other rows.",
+   "impact": "Every admission for a duplicated patient would join twice.",
+   "detected": "The notebook compares the row count with the count after dropDuplicates(), and separately checks that patient_id is unique.",
+   "fixes": [
+    {
+     "case": 3,
+     "text": "Exact copies removed.",
+     "code": "patients_clean = patients.dropDuplicates()"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "patients.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/datasets/ehr/patients.csv"
+    },
+    {
+     "label": "patients.ipynb",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/ehr/patients.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "HC-02",
+   "source": "hc",
+   "fixed_in": [
+    3
+   ],
+   "file": "patients.csv",
+   "column": "city",
+   "layer": "Bronze → Silver",
+   "kind": "missing",
+   "title": "Patients with no city — kept, but set aside",
+   "raw": "",
+   "expected": "moved to patients_missing_city",
+   "rows": 51,
+   "of": 100000,
+   "spec": {
+    "type": "quarantine",
+    "in": 100000,
+    "out": 99949,
+    "aside": 51,
+    "table": "health.silver.patients_missing_city"
+   },
+   "wrong": "51 patients have no city.",
+   "impact": "Dropping them would lose real patients; keeping them in the main table would put blanks into every geographic breakdown.",
+   "detected": "Null-count profile of every column.",
+   "fixes": [
+    {
+     "case": 3,
+     "text": "Valid rows go to health.silver.patients; the 51 go to their own table instead of being deleted.",
+     "code": "valid_patients = patients_clean.filter(\n    F.col(\"city\").isNotNull()\n)\npatients_missing_city = patients_clean.filter(\n    F.col(\"city\").isNull()\n)"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "patients.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/datasets/ehr/patients.csv"
+    },
+    {
+     "label": "patients.ipynb",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/ehr/patients.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "HC-03",
+   "source": "hc",
+   "fixed_in": [
+    3
+   ],
+   "file": "admissions_2021–2025.csv",
+   "column": "admission_date",
+   "layer": "Bronze → Silver",
+   "kind": "missing",
+   "title": "Admissions with no admission date",
+   "raw": "1,57399,246,4724,216,",
+   "expected": "moved to admissions_missing_date",
+   "rows": 105,
+   "of": 500000,
+   "rows_note": "105 of 500,000 admissions across the five yearly files.",
+   "spec": {
+    "type": "quarantine",
+    "in": 500000,
+    "out": 499895,
+    "aside": 105,
+    "table": "health.silver.admissions_missing_date",
+    "row": [
+     "admission_id",
+     "patient_id",
+     "hospital_id",
+     "doctor_id",
+     "procedure_id",
+     "admission_date"
+    ],
+    "vals": [
+     "1",
+     "57399",
+     "246",
+     "4724",
+     "216",
+     ""
+    ]
+   },
+   "wrong": "The very first admission in the 2021 file has every ID but no date. 105 admissions are like that.",
+   "impact": "An admission without a date can’t be counted in admissions_by_year, but its billing still exists.",
+   "detected": "Null-count profile after consolidating the five yearly files.",
+   "fixes": [
+    {
+     "case": 3,
+     "text": "The five yearly files are unioned first; rows without a date are written to a separate table.",
+     "code": "valid_admissions = admissions.filter(\n    F.col(\"admission_date\").isNotNull()\n)\nadmissions_missing_date = admissions.filter(\n    F.col(\"admission_date\").isNull()\n)"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "admissions_2021.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/datasets/ehr/admissions_2021.csv"
+    },
+    {
+     "label": "admissions.ipynb",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/ehr/admissions.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "HC-04",
+   "source": "hc",
+   "fixed_in": [
+    3
+   ],
+   "file": "billing_2021–2025.csv",
+   "column": "patient_paid",
+   "layer": "Bronze → Silver",
+   "kind": "format",
+   "title": "Money with fifteen decimal places",
+   "raw": "6585.389999999999",
+   "expected": "6585.39",
+   "rows": 245846,
+   "of": 500000,
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "6585.389999999999",
+      "6585.39"
+     ],
+     [
+      "14690.099999999999",
+      "14690.10"
+     ]
+    ]
+   },
+   "wrong": "Nearly half of the patient payments carry floating-point noise: 6585.389999999999 instead of 6585.39.",
+   "impact": "Sums drift by fractions of a cent and equality checks between totals fail for no business reason.",
+   "detected": "Min/max profile and a financial integrity check on the consolidated billing table.",
+   "fixes": [
+    {
+     "case": 3,
+     "text": "Both payment columns rounded to two decimals.",
+     "code": "billing_clean = (\n    billing\n    .withColumn(\n        \"insurance_paid\",\n        F.round(F.col(\"insurance_paid\"), 2)\n    )\n    .withColumn(\n        \"patient_paid\",\n        F.round(F.col(\"patient_paid\"), 2)\n    )\n)"
+    }
+   ],
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "billing_2021.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/datasets/billing/billing_2021.csv"
+    },
+    {
+     "label": "billing.ipynb",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/billing/billing.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "HC-05",
+   "source": "hc",
+   "fixed_in": [
+    3
+   ],
+   "file": "billing_2021–2025.csv",
+   "column": "total_cost = insurance_paid + patient_paid",
+   "layer": "Silver",
+   "kind": "arithmetic",
+   "title": "Do the payments add up? Checked: yes",
+   "raw": "15029 = 8443.61 + 6585.39",
+   "expected": "0 mismatches",
+   "rows": 0,
+   "of": 500000,
+   "spec": {
+    "type": "clean",
+    "query": "round(insurance_paid + patient_paid, 2) != round(total_cost, 2)"
+   },
+   "wrong": "Nothing — every bill’s two payments add up to its total, once rounded to the cent.",
+   "impact": "This is the check that makes the revenue Gold tables safe to sum.",
+   "fixes": [],
+   "test": {
+    "lang": "python",
+    "sql": "billing_mismatch = billing.filter(\n    F.round(\n        F.col(\"insurance_paid\") + F.col(\"patient_paid\"),\n        2\n    ) != F.round(F.col(\"total_cost\"), 2)\n)\nprint(\n    f\"Mismatched Records: {billing_mismatch.count()}\"\n)"
+   },
+   "status": "clean",
+   "cites": [
+    {
+     "label": "billing_2021.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/datasets/billing/billing_2021.csv"
+    },
+    {
+     "label": "billing.ipynb",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/billing/billing.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "HC-06",
+   "source": "hc",
+   "fixed_in": [
+    3
+   ],
+   "file": "admissions + billing, 2021–2025",
+   "column": "admission_id, billing_id",
+   "layer": "Silver",
+   "kind": "duplicates",
+   "title": "Business keys across ten yearly files: unique",
+   "raw": "admission_id",
+   "expected": "0 duplicates",
+   "rows": 0,
+   "of": 1000000,
+   "spec": {
+    "type": "clean",
+    "query": "count(*) vs count(distinct id) — 500,000 = 500,000, twice"
+   },
+   "wrong": "Nothing. Splitting a table into yearly files is a common way to get duplicate IDs; these files don’t have any.",
+   "impact": "Unique keys are what allow billing to be joined back to admissions one-to-one.",
+   "fixes": [],
+   "test": {
+    "lang": "python",
+    "sql": "total_rows = billing.count()\ndistinct_billing_ids = (\n    billing\n    .select(\"billing_id\")\n    .distinct()\n    .count()\n)"
+   },
+   "status": "clean",
+   "cites": [
+    {
+     "label": "billing_2021.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/datasets/billing/billing_2021.csv"
+    },
+    {
+     "label": "billing.ipynb",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/billing/billing.ipynb"
+    },
+    {
+     "label": "admissions.ipynb",
+     "url": "https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/ehr/admissions.ipynb"
+    }
+   ]
+  },
+  {
+   "id": "HB-02",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv",
+   "column": "customer_id",
+   "layer": "Power Query",
+   "kind": "duplicates",
+   "title": "120 customers copied whole",
+   "raw": "C10200 ×2",
+   "expected": "one row each",
+   "rows": 120,
+   "of": 20120,
+   "detected": "Count 20,120, distinct 20,000, unique 19,880",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Removed duplicates across all columns.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "count",
+    "in": 20120,
+    "out": 20000,
+    "unit": "customer rows"
+   },
+   "wrong": "Whole customer rows appear twice.",
+   "impact": "Every account and loan of a duplicated customer would be counted twice in customer-level KPIs.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 19",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L19"
+    }
+   ]
+  },
+  {
+   "id": "HB-03",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv",
+   "column": "gender",
+   "layer": "Power Query",
+   "kind": "codes",
+   "title": "Eight versions of two values",
+   "raw": "FEMALE",
+   "expected": "Female",
+   "rows": 1968,
+   "of": 20120,
+   "detected": "Distinct count 8, expected 2",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Capitalised each word, then replaced M with Male and F with Female (whole cell).",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "Female",
+      9107,
+      "Female"
+     ],
+     [
+      "Male",
+      9032,
+      "Male"
+     ],
+     [
+      "male",
+      355,
+      "Male"
+     ],
+     [
+      "f",
+      340,
+      "Female"
+     ],
+     [
+      "M",
+      340,
+      "Male"
+     ],
+     [
+      "m",
+      322,
+      "Male"
+     ],
+     [
+      "FEMALE",
+      316,
+      "Female"
+     ],
+     [
+      "F",
+      308,
+      "Female"
+     ]
+    ]
+   },
+   "wrong": "Case and abbreviations: male, FEMALE, M, m, F, f next to Male and Female.",
+   "impact": "A slicer on gender would show eight options.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 20",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L20"
+    }
+   ]
+  },
+  {
+   "id": "HB-04",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv",
+   "column": "birth_date",
+   "layer": "Power Query",
+   "kind": "placeholder",
+   "title": "Customers aged 126",
+   "raw": "1900-01-01",
+   "expected": "null",
+   "rows": 104,
+   "of": 20120,
+   "detected": "Minimum value and a temporary filter",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Replaced with null; customers kept, age analysis skips them.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "1900-01-01",
+      "null"
+     ]
+    ],
+    "note": "age 126"
+   },
+   "wrong": "A placeholder date standing in for “unknown”.",
+   "impact": "Placeholder values are missing data that looks real — they pass every type check.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 21",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L21"
+    }
+   ],
+   "lesson": "Placeholder values (0, 999, 1900-01-01) are missing data that looks real."
+  },
+  {
+   "id": "HB-07",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv",
+   "column": "email",
+   "layer": "Power Query",
+   "kind": "whitespace",
+   "title": "Shouting emails with a trailing space",
+   "raw": "NOAH.ROSSI5541@MAIL.EXAMPLE ",
+   "expected": "noah.rossi5541@mail.example",
+   "rows": 1030,
+   "of": 20120,
+   "detected": "Contains \"@MAIL\" 1,030; ends with a space 1,030",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Trimmed and lower-cased.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "chars"
+   },
+   "wrong": "Upper case and a trailing space, always on the same rows.",
+   "impact": "The same address in two forms breaks uniqueness and any join on email.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 24",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L24"
+    }
+   ]
+  },
+  {
+   "id": "HB-08",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv",
+   "column": "region",
+   "layer": "Power Query",
+   "kind": "missing",
+   "title": "Missing region stored as an empty string",
+   "raw": "",
+   "expected": "the home branch’s region",
+   "rows": 299,
+   "of": 20120,
+   "detected": "2% empty; 6 distinct values (5 regions and blank)",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Filled from the home branch’s region (20,000 of 20,000 matched).",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "empty",
+    "label": "region"
+   },
+   "wrong": "Region is blank — an empty string, not a null.",
+   "impact": "A null check alone wouldn’t find it.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 25",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L25"
+    }
+   ],
+   "lesson": "Missing values can be empty strings, not null. Check both.",
+   "rows_note": "299 rows; 298 after removing duplicates."
+  },
+  {
+   "id": "HB-11",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv",
+   "column": "income_band",
+   "layer": "Power Query",
+   "kind": "codes",
+   "title": "Hgh",
+   "raw": "Hgh",
+   "expected": "High",
+   "rows": 189,
+   "of": 20120,
+   "detected": "Distinct count 8; minimum \" Medium\" shows the space",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Trimmed, capitalised each word, replaced Hgh with High.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "Medium",
+      8036,
+      "Medium"
+     ],
+     [
+      "Low",
+      7155,
+      "Low"
+     ],
+     [
+      "High",
+      3648,
+      "High"
+     ],
+     [
+      "Very High",
+      1091,
+      "Very High"
+     ],
+     [
+      "Very high",
+      56,
+      "Very High"
+     ],
+     [
+      "Hgh",
+      46,
+      "High"
+     ],
+     [
+      "low",
+      44,
+      "Low"
+     ],
+     [
+      " Medium",
+      44,
+      "Medium"
+     ]
+    ]
+   },
+   "wrong": "Eight values instead of four: case, a typo and a leading space.",
+   "impact": "Income-band breakdowns would split real groups and hide 46 high earners.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 28",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L28"
+    }
+   ]
+  },
+  {
+   "id": "HB-12",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv",
+   "column": "signup_date",
+   "layer": "Power Query",
+   "kind": "format",
+   "title": "Two date formats in one column",
+   "raw": "17/12/2022",
+   "expected": "2022-12-17",
+   "rows": 1423,
+   "of": 20120,
+   "detected": "Value list; filter on \"/\"",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Custom column parsing each format separately, 0 errors.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "17/12/2022",
+      "2022-12-17"
+     ],
+     [
+      "2022-12-17",
+      "2022-12-17"
+     ]
+    ],
+    "note": "17 can only be a day"
+   },
+   "wrong": "YYYY-MM-DD and DD/MM/YYYY mixed together. 17/12/2022 proves the second format is day first.",
+   "impact": "A US-locale type change would have failed on 874 rows and silently swapped day and month on 549.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 29",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L29"
+    }
+   ]
+  },
+  {
+   "id": "HB-01",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "accounts.csv",
+   "column": "status",
+   "layer": "Power Query",
+   "kind": "codes",
+   "title": "Four spellings of open and closed",
+   "raw": "CLOSED",
+   "expected": "Closed",
+   "rows": 1831,
+   "of": 36605,
+   "detected": "Distinct count 4; the four counts add to 36,605",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Capitalised each word: Open 25,971, Closed 10,634.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "variants",
+    "variants": [
+     [
+      "Open",
+      24669,
+      "Open"
+     ],
+     [
+      "Closed",
+      10105,
+      "Closed"
+     ],
+     [
+      "open",
+      1302,
+      "Open"
+     ],
+     [
+      "CLOSED",
+      529,
+      "Closed"
+     ]
+    ]
+   },
+   "wrong": "open and CLOSED next to Open and Closed.",
+   "impact": "Counting open accounts by an exact match would miss 1,302 of them.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "accounts.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/accounts.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 47",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L47"
+    }
+   ]
+  },
+  {
+   "id": "HB-18",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "accounts.csv",
+   "column": "close_date, open_date",
+   "layer": "Power Query",
+   "kind": "impossible",
+   "title": "Accounts closed before they were opened",
+   "raw": "2019-02-09 → 2019-01-10",
+   "expected": "open_date + 30 days",
+   "rows": 40,
+   "of": 36605,
+   "detected": "True/false check column, 40 true",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Set close_date to open_date + 30 and flagged the rows in close_date_corrected.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "order",
+    "a": [
+     "open_date",
+     "2019-02-09"
+    ],
+    "b": [
+     "close_date",
+     "2019-01-10"
+    ],
+    "key": "A000295 · checking"
+   },
+   "wrong": "40 accounts closed exactly 30 days before they opened. open_date is right: account IDs follow open-date order.",
+   "impact": "An account can’t churn before it exists; these rows would distort closure rates.",
+   "status": "reopened",
+   "cites": [
+    {
+     "label": "accounts.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/accounts.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 53",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L53"
+    }
+   ],
+   "see": "HB-L2",
+   "memo": "Ask the data owner for the missing November and December 2025 customers and correct the 40 account close dates."
+  },
+  {
+   "id": "HB-19",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "loans.csv",
+   "column": "loan_id",
+   "layer": "Power Query",
+   "kind": "duplicates",
+   "title": "Twenty loans listed twice",
+   "raw": "L00079 ×2",
+   "expected": "5,300 unique loans",
+   "rows": 20,
+   "of": 5320,
+   "detected": "Count 5,320, distinct 5,300, unique 5,280; Keep Duplicates on all columns returned 40 rows",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Removed duplicates; 5,300 unique loans.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "count",
+    "in": 5320,
+    "out": 5300,
+    "unit": "loan rows"
+   },
+   "wrong": "Exact copies of 20 loans.",
+   "impact": "Duplicated loans double their balance and, if they default, their loss.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "loans.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/loans.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 63",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L63"
+    }
+   ]
+  },
+  {
+   "id": "HB-24",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "loans.csv",
+   "column": "loan_amount",
+   "layer": "Power Query",
+   "kind": "missing",
+   "title": "Loan amounts left blank",
+   "raw": "",
+   "expected": "calculated, flagged",
+   "rows": 15,
+   "of": 5320,
+   "detected": "15 empty strings",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Flagged in loan_amount_calculated, then calculated from payment, rate and term with the standard loan formula, rounded to 100. Tested first on loans with a known amount.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "empty",
+    "label": "loan_amount"
+   },
+   "wrong": "Fifteen loans have no amount — stored as an empty string.",
+   "impact": "Lending volume by year would be understated, silently.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "loans.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/loans.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 68",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L68"
+    }
+   ],
+   "lesson": "Before filling a missing value with a formula, test the formula on rows where the answer is known."
+  },
+  {
+   "id": "HB-25",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "loans.csv",
+   "column": "interest_rate",
+   "layer": "Power Query",
+   "kind": "scale",
+   "title": "Rates stored as percentages",
+   "raw": "9.96",
+   "expected": "0.0996",
+   "rows": 341,
+   "of": 5320,
+   "detected": "Sorted descending; filtered values not starting with \"0.\"",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Divided by 100 when 1 or higher. Average fell from 71.5% to about 9%.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "scale",
+    "from": "9.96",
+    "to": "0.0996",
+    "note": "average 71.5% → about 9%"
+   },
+   "wrong": "341 rates are written as percentages (9.96) among decimals (0.0996).",
+   "impact": "One column, two scales: the average rate came out at 71.5%.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "loans.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/loans.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 69",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L69"
+    }
+   ],
+   "rows_note": "341 rows; 339 after removing duplicates."
+  },
+  {
+   "id": "HB-28",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "loans.csv",
+   "column": "credit_score_at_origination",
+   "layer": "Power Query",
+   "kind": "placeholder",
+   "title": "Credit scores of 0 and 999",
+   "raw": "999",
+   "expected": "null → “Unknown” band",
+   "rows": 39,
+   "of": 5320,
+   "detected": "Minimum 0, maximum 999",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Replaced with null; loans kept and shown as \"Unknown\" in score bands.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "0",
+      "null"
+     ],
+     [
+      "999",
+      "null"
+     ]
+    ],
+    "note": "valid range 300–850"
+   },
+   "wrong": "Scores outside the 300–850 scale: 0 on 22 loans, 999 on 17.",
+   "impact": "Credit score was the strongest predictor of default in this analysis; placeholder scores would land in the wrong bands.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "loans.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/loans.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 72",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L72"
+    }
+   ]
+  },
+  {
+   "id": "HB-34",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "transactions",
+   "column": "txn_id",
+   "layer": "Power Query",
+   "kind": "duplicates",
+   "title": "9,279 transactions listed twice",
+   "raw": "T00000320 ×2",
+   "expected": "one row each",
+   "rows": 9279,
+   "of": 2329114,
+   "detected": "Count 2,329,114, distinct 2,319,835; Keep Duplicates on all columns returned 18,558 rows",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Removed duplicates.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "count",
+    "in": 2329114,
+    "out": 2319835,
+    "unit": "transaction rows"
+   },
+   "wrong": "Exact copies of 9,279 transactions.",
+   "impact": "Fee income is a sum of transactions; copies inflate it.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "transactions.zip (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/transactions.zip"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 87",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L87"
+    }
+   ]
+  },
+  {
+   "id": "HB-35",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "transactions",
+   "column": "account_id",
+   "layer": "Power Query",
+   "kind": "keys",
+   "title": "Transactions on accounts that don’t exist",
+   "raw": "A945569",
+   "expected": "excluded",
+   "rows": 150,
+   "of": 2329114,
+   "detected": "Filter on IDs not starting with \"A0\"",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Inner merge with accounts excluded them (35 credits $95,720.53, 101 debits $24,646.13, 14 fees $112.00).",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "chars",
+    "note": "real accounts end at A036605"
+   },
+   "wrong": "Orphans: account IDs in the A9xxxxx range, while real accounts end at A036605.",
+   "impact": "Money with no account can’t be assigned to a customer, segment or region.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "transactions.zip (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/transactions.zip"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 88",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L88"
+    }
+   ],
+   "rows_note": "150 rows (counted after duplicates were removed)."
+  },
+  {
+   "id": "HB-36",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "transactions",
+   "column": "txn_datetime",
+   "layer": "Power Query",
+   "kind": "impossible",
+   "title": "Transactions from the future",
+   "raw": "2026-03-02 00:00:00",
+   "expected": "removed",
+   "rows": 40,
+   "of": 2329114,
+   "detected": "Maximum 2026-04-29; filter on 2026",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Removed rows dated 2026 or later.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "2026-03-02 00:00:00",
+      "removed"
+     ]
+    ],
+    "note": "extract ends 2025-12-31"
+   },
+   "wrong": "Dates after the extract date: March and April 2026, all at midnight.",
+   "impact": "Future rows would appear in a period that hasn’t happened.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "transactions.zip (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/transactions.zip"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 89",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L89"
+    }
+   ]
+  },
+  {
+   "id": "HB-38",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "transactions",
+   "column": "merchant_category",
+   "layer": "Power Query",
+   "kind": "codes",
+   "title": "34 categories that are really 17",
+   "raw": "retail  ",
+   "expected": "Retail",
+   "rows": 46503,
+   "of": 2329114,
+   "detected": "34 distinct, exactly 17 doubled",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Trimmed and capitalised each word; 17 values.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "chars"
+   },
+   "wrong": "Lower case and two trailing spaces, on the same rows.",
+   "impact": "Spending by category would show every category twice.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "transactions.zip (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/transactions.zip"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 91",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L91"
+    }
+   ],
+   "rows_note": "46,503 rows; 46,320 after removing duplicates."
+  },
+  {
+   "id": "HB-39",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "transactions",
+   "column": "amount",
+   "layer": "Power Query",
+   "kind": "scale",
+   "title": "Direction stored twice",
+   "raw": "-22.75",
+   "expected": "22.75 (Debit)",
+   "rows": 17403,
+   "of": 2329114,
+   "detected": "Filter on values starting with \"-\": all Debit",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Absolute value; direction stays in txn_type.",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "pair",
+    "pairs": [
+     [
+      "-22.75",
+      "22.75"
+     ]
+    ],
+    "note": "txn_type already says Debit"
+   },
+   "wrong": "Some Debit rows carry a negative amount — the direction is in the sign and in txn_type.",
+   "impact": "Summing debits would partly cancel itself out.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "transactions.zip (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/transactions.zip"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 92",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L92"
+    }
+   ],
+   "rows_note": "17,403 rows; 17,327 after removing duplicates."
+  },
+  {
+   "id": "HB-41",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "transactions",
+   "column": "channel",
+   "layer": "Power Query",
+   "kind": "missing",
+   "title": "Missing channel stored as an empty string",
+   "raw": "",
+   "expected": "Unknown",
+   "rows": 12231,
+   "of": 2329114,
+   "detected": "7 channels plus blank; 12,231 blanks",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Replaced the blank with \"Unknown\".",
+     "code": null
+    }
+   ],
+   "spec": {
+    "type": "empty",
+    "label": "channel"
+   },
+   "wrong": "Normal debits and credits with an empty channel.",
+   "impact": "Channel shares would quietly exclude 12,231 transactions.",
+   "status": "resolved",
+   "cites": [
+    {
+     "label": "transactions.zip (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/transactions.zip"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 94",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L94"
+    }
+   ],
+   "rows_note": "12,231 rows; 12,183 after removing duplicates."
+  },
+  {
+   "id": "HB-32",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "loans.csv",
+   "column": "default_date, origination_date",
+   "layer": "Power Query",
+   "kind": "impossible",
+   "title": "Loans that default before they’re issued? None",
+   "raw": "0",
+   "expected": "0",
+   "rows": 0,
+   "of": 5300,
+   "detected": "True/false check column, 0 true",
+   "fixes": [],
+   "spec": {
+    "type": "clean",
+    "query": "default_date < origination_date"
+   },
+   "wrong": "Nothing — a cross-column rule checked and passed.",
+   "impact": "Same check that caught the 40 accounts (#18), run on loans.",
+   "status": "clean",
+   "cites": [
+    {
+     "label": "loans.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/loans.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 76",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L76"
+    }
+   ],
+   "lesson": "A clean column is a result too: record \"no issues\"."
+  },
+  {
+   "id": "HB-L1",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "customers.csv, accounts.csv",
+   "column": "signup_date, open_date",
+   "layer": "Analysis",
+   "kind": "missing",
+   "title": "The customers who stop arriving in November",
+   "raw": "7 · 3",
+   "expected": "about 250 a month",
+   "rows": null,
+   "of": null,
+   "rows_note": "7 new customers in November 2025 and 3 in December, against about 250 a month.",
+   "spec": {
+    "type": "limitation",
+    "series": [
+     [
+      "Oct",
+      "~250"
+     ],
+     [
+      "Nov",
+      "7"
+     ],
+     [
+      "Dec",
+      "3"
+     ]
+    ]
+   },
+   "wrong": "New customers almost stop after 31 October 2025; account openings stop on 15 December.",
+   "impact": "Active and new customers are understated for November and December 2025. Churn, closures, fees and losses are not affected.",
+   "detected": "A sudden break in a flow that was steady for years — treated as a data question before a business finding.",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Kept the data. Customer counts are reported to October 2025, and this is stated on the dashboard, in the memo and in the README.",
+     "code": null
+    }
+   ],
+   "status": "limitation",
+   "memo": "Ask the data owner for the missing November and December 2025 customers and correct the 40 account close dates.",
+   "lesson": "A sudden break in a flow that was steady for years is a data question before it is a business finding.",
+   "cites": [
+    {
+     "label": "customers.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 129",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L129"
+    },
+    {
+     "label": "05_Findings_Log.md, line 58",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/05_Findings_Log.md?plain=1#L58"
+    }
+   ]
+  },
+  {
+   "id": "HB-L2",
+   "source": "hb",
+   "fixed_in": [
+    4
+   ],
+   "file": "accounts.csv, transactions",
+   "column": "close_date",
+   "layer": "Analysis",
+   "kind": "impossible",
+   "title": "My fix for #18 was wrong for most of the 40",
+   "raw": "close_date = open_date + 30",
+   "expected": "still flagged",
+   "rows": 40,
+   "of": 36605,
+   "rows_note": "27 of the 40 corrected accounts have transactions after the new close date (1,436 rows); 12 checking accounts kept paying the fee (239 fees, $1,692).",
+   "spec": {
+    "type": "sensitivity",
+    "rows": [
+     [
+      "Customers who left, 2023 to 2025",
+      "3,775",
+      "3,762",
+      "-0.3%"
+     ],
+     [
+      "Customers who left, Jul 2024 to Dec 2025",
+      "3,044",
+      "3,037",
+      "-0.2%"
+     ],
+     [
+      "Mass checking closure rate before the change",
+      "0.391% a month",
+      "0.389% a month",
+      "-0.002 points"
+     ],
+     [
+      "Extra Mass closures, Jul 2024 to Dec 2025",
+      "2,640.7",
+      "2,639.8",
+      "under 0.1%"
+     ],
+     [
+      "Net effect of the price change",
+      "$742,519",
+      "$741,381",
+      "-0.2%"
+     ]
+    ]
+   },
+   "wrong": "The correction applied in #18 — close date = open date + 30 — doesn’t survive a check against another table: most of these accounts kept transacting after their new close date.",
+   "impact": "Very small: 0.1% of accounts. It explains why fee-paying accounts exceed open Mass checking accounts by 0 to 10 a month.",
+   "detected": "Testing the cleaning assumption against the transactions table.",
+   "fixes": [
+    {
+     "case": 4,
+     "text": "Unresolved and still flagged. Recommended fix: set the close date to the end of the month of the last transaction, or treat the account as open if activity continues to December 2025. Every key result was recalculated without the 40 customers: no conclusion changes.",
+     "code": null
+    }
+   ],
+   "status": "open",
+   "memo": "Ask the data owner for the missing November and December 2025 customers and correct the 40 account close dates.",
+   "lesson": "Test a cleaning assumption against other tables before trusting it (L2).",
+   "cites": [
+    {
+     "label": "accounts.csv (raw file)",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/accounts.csv"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 130",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L130"
+    },
+    {
+     "label": "02_Data_Quality_Log.md, line 132",
+     "url": "https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L132"
+    }
+   ]
+  }
+ ],
+ "sources": {
+  "wh": [
+   [
+    "cust_info.csv",
+    "CRM",
+    18494
+   ],
+   [
+    "prd_info.csv",
+    "CRM",
+    397
+   ],
+   [
+    "sales_details.csv",
+    "CRM",
+    60398
+   ],
+   [
+    "CUST_AZ12.csv",
+    "ERP",
+    18484
+   ],
+   [
+    "LOC_A101.csv",
+    "ERP",
+    18484
+   ],
+   [
+    "PX_CAT_G1V2.csv",
+    "ERP",
+    37
+   ]
+  ],
+  "hc": [
+   [
+    "patients.csv",
+    "EHR",
+    100100
+   ],
+   [
+    "doctors.csv",
+    "EHR",
+    5000
+   ],
+   [
+    "admissions_2021.csv",
+    "EHR",
+    100000
+   ],
+   [
+    "admissions_2022.csv",
+    "EHR",
+    100000
+   ],
+   [
+    "admissions_2023.csv",
+    "EHR",
+    100000
+   ],
+   [
+    "admissions_2024.csv",
+    "EHR",
+    100000
+   ],
+   [
+    "admissions_2025.csv",
+    "EHR",
+    100000
+   ],
+   [
+    "billing_2021.csv",
+    "Billing",
+    100000
+   ],
+   [
+    "billing_2022.csv",
+    "Billing",
+    100000
+   ],
+   [
+    "billing_2023.csv",
+    "Billing",
+    100000
+   ],
+   [
+    "billing_2024.csv",
+    "Billing",
+    100000
+   ],
+   [
+    "billing_2025.csv",
+    "Billing",
+    100000
+   ],
+   [
+    "hospitals.csv",
+    "Master",
+    500
+   ],
+   [
+    "procedures.csv",
+    "Master",
+    1000
+   ]
+  ]
+ }
+}

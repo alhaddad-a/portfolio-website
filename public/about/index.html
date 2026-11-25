@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — Abdullah Alhaddad, Data Engineer</title>
+<meta name="description" content="Data engineer based in Ankara, Türkiye. How I design pipelines, model data, and test data quality.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/about/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="About — Abdullah Alhaddad, Data Engineer">
+<meta property="og:description" content="Data engineer based in Ankara, Türkiye. How I design pipelines, model data, and test data quality.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/about/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About — Abdullah Alhaddad, Data Engineer">
+<meta name="twitter:description" content="Data engineer based in Ankara, Türkiye. How I design pipelines, model data, and test data quality.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "AboutPage", "url": "https://alhaddad-a.vercel.app/about/", "name": "About — Abdullah Alhaddad", "mainEntity": {"@id": "https://alhaddad-a.vercel.app/#person"}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/" aria-current="page">About</a></li><li><a href="/investigations/">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="about-page">
+  <div class="wrap">
+    <div class="ab-grid">
+      <figure class="ab-fig"><picture>
+        <source type="image/webp" srcset="/assets/img/abdullah-alhaddad-480.webp 480w, /assets/img/abdullah-alhaddad-800.webp 800w" sizes="(max-width: 700px) 160px, 280px">
+        <img src="/assets/img/abdullah-alhaddad-480.jpg" srcset="/assets/img/abdullah-alhaddad-480.jpg 480w, /assets/img/abdullah-alhaddad-800.jpg 800w" sizes="(max-width: 700px) 160px, 280px" width="800" height="1000" decoding="async" alt="Portrait of Abdullah Alhaddad">
+      </picture></figure>
+      <div class="ab-text">
+        <h1>About</h1>
+        <p class="ab-lead">My work sits between messy source systems and the people who need answers from them.</p>
+        
+        <p>I'm a data engineer based in Ankara, Türkiye. I ingest raw files, clean and reconcile them, and model the result into tables an analyst can query without second-guessing the numbers.</p>
+        <p>Most of what I build follows the <strong>Medallion Architecture</strong> — Bronze for data exactly as it arrived, Silver for cleaned and conformed records, Gold for business-ready star schemas and KPI tables. I've implemented that pattern end to end in <strong>Microsoft SQL Server</strong> with T-SQL stored procedures, and on <strong>Databricks</strong> with PySpark, Delta Lake and Unity Catalog — including a healthcare lakehouse covering five years of admissions and billing data. I also take data through to the decision: a Power BI analysis of a retail bank's 2025 results, ending in a memo to the CFO.</p>
+        <p>I care about the unglamorous parts: data-quality checks that run as code, scripts that can be re-run safely, and documentation the next engineer can actually use. I'm open to data engineering roles and collaborations.</p>
+        <p class="ab-links"><a class="btn" href="/projects/">See my projects <span aria-hidden="true">→</span></a><a class="text-link" href="/contact/">Get in touch</a></p>
+      </div>
+    </div>
+    <section class="approach" aria-labelledby="ap-h">
+      <h2 id="ap-h">How I work</h2>
+      <ol class="principles"><li><h3>Keep raw data raw</h3><p>Bronze stores source data exactly as it arrived. When a cleaning rule turns out to be wrong, I can fix it and replay from Bronze instead of going back to the source.</p></li><li><h3>Quality checks are tests</h3><p>Nulls, duplicates, business keys, domain values and financial totals are validated by scripts that live in the repo next to the pipeline — not by eyeballing a table.</p></li><li><h3>Re-runnable by design</h3><p>Scripts check whether objects exist before creating them, and loads are full refreshes, so running a pipeline twice gives the same result as running it once.</p></li><li><h3>Documented for the next person</h3><p>Each project ships with a data catalog, naming conventions and a source-to-target lineage table, so someone new can find where every column comes from.</p></li></ol>
+    </section>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

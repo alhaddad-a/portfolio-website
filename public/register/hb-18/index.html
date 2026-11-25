@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HB-18 · Accounts closed before they were opened — Abdullah Alhaddad</title>
+<meta name="description" content="HB-18: Accounts closed before they were opened. 40 accounts closed exactly 30 days before they opened. open_date is right: account IDs follow open-date order.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/register/hb-18/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="HB-18 · Accounts closed before they were opened — Abdullah Alhaddad">
+<meta property="og:description" content="HB-18: Accounts closed before they were opened. 40 accounts closed exactly 30 days before they opened. open_date is right: account IDs follow open-date order.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/register/hb-18/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HB-18 · Accounts closed before they were opened — Abdullah Alhaddad">
+<meta name="twitter:description" content="HB-18: Accounts closed before they were opened. 40 accounts closed exactly 30 days before they opened. open_date is right: account IDs follow open-date order.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Investigations", "item": "https://alhaddad-a.vercel.app/investigations/"}, {"@type": "ListItem", "position": 2, "name": "HB-18", "item": "https://alhaddad-a.vercel.app/register/hb-18/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="entry">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/investigations/">Investigations</a></li><li aria-current="page">HB-18</li></ol></nav>
+    <header class="e-head">
+      <p class="e-meta"><span class="e-id">HB-18</span><span class="st st-reopened"><i aria-hidden="true"></i>Reopened</span></p>
+      <h1>Accounts closed before they were opened</h1>
+      <p class="e-src">Harborview Bank</p>
+    </header>
+    <section class="qa"><h2>What was wrong</h2><p>40 accounts closed exactly 30 days before they opened. open_date is right: account IDs follow open-date order.</p></section><section class="qa qa-ev"><h2>Evidence</h2><figure class="e-spec"><div class="sp sp-order">
+  <p class="sp-cap">One row, as it arrived <span>A000295 · checking</span></p>
+  <div class="tl" role="img" aria-label="close_date 2019-01-10 is earlier than open_date 2019-02-09">
+    <span class="tl-axis"></span>
+    <span class="tl-pt tl-b"><b>2019-01-10</b><span>close_date</span></span>
+    <span class="tl-pt tl-a"><b>2019-02-09</b><span>open_date</span></span>
+    <span class="tl-gap">ends before it begins</span>
+  </div>
+</div></figure></section><section class="qa"><h2>How it was detected</h2><p>True/false check column, 40 true</p></section><section class="qa"><h2>Why it matters</h2><p>An account can’t churn before it exists; these rows would distort closure rates.</p></section><section class="qa"><h2>What was done</h2><div class="fix"><p>Set close_date to open_date + 30 and flagged the rows in close_date_corrected.</p></div></section><section class="qa"><h2>Why it was reopened</h2><p>A later check against the transactions table showed the correction was wrong for most of these accounts. <a href="/register/hb-l2/">See HB-L2</a>.</p></section><blockquote class="memo"><p>Ask the data owner for the missing November and December 2025 customers and correct the 40 account close dates.</p><footer>CFO memo, recommendation 3 · <a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/04_outputs/CFO_Memo.pdf" target="_blank" rel="noopener">CFO_Memo.pdf ↗</a></footer></blockquote>
+    <section class="qa refs">
+      <h2>References</h2>
+      <dl class="ref-list">
+        <div><dt>File</dt><dd><code>accounts.csv</code></dd></div>
+        <div><dt>Column</dt><dd><code>close_date, open_date</code></dd></div>
+        <div><dt>Layer</dt><dd>Power Query</dd></div>
+        <div><dt>Rows affected</dt><dd>40 of 36,605</dd></div>
+        <div><dt>Status</dt><dd>A fix that was later shown to be wrong.</dd></div>
+        <div><dt>Project</dt><dd><ul><li><a href="/projects/harborview-bank-analysis/">Harborview Bank Power BI Analysis</a></li></ul></dd></div>
+      </dl>
+      <p class="cites-h">Sources in the repositories</p>
+      <ul class="cites"><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/accounts.csv" target="_blank" rel="noopener">accounts.csv (raw file) ↗</a></li><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L53" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 53 ↗</a></li></ul>
+    </section>
+    <nav class="pager" aria-label="More investigations">
+      <a href="/register/hb-01/"><span>← HB-01</span>Four spellings of open and closed</a>
+      <a href="/register/hb-19/"><span>HB-19 →</span>Twenty loans listed twice</a>
+    </nav>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

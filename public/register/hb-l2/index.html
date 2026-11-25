@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HB-L2 · My fix for #18 was wrong for most of the 40 — Abdullah Alhaddad</title>
+<meta name="description" content="HB-L2: My fix for #18 was wrong for most of the 40. The correction applied in #18 — close date = open date + 30 — doesn’t survive a check against another tabl">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/register/hb-l2/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="HB-L2 · My fix for #18 was wrong for most of the 40 — Abdullah Alhaddad">
+<meta property="og:description" content="HB-L2: My fix for #18 was wrong for most of the 40. The correction applied in #18 — close date = open date + 30 — doesn’t survive a check against another tabl">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/register/hb-l2/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HB-L2 · My fix for #18 was wrong for most of the 40 — Abdullah Alhaddad">
+<meta name="twitter:description" content="HB-L2: My fix for #18 was wrong for most of the 40. The correction applied in #18 — close date = open date + 30 — doesn’t survive a check against another tabl">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Investigations", "item": "https://alhaddad-a.vercel.app/investigations/"}, {"@type": "ListItem", "position": 2, "name": "HB-L2", "item": "https://alhaddad-a.vercel.app/register/hb-l2/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="entry">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/investigations/">Investigations</a></li><li aria-current="page">HB-L2</li></ol></nav>
+    <header class="e-head">
+      <p class="e-meta"><span class="e-id">HB-L2</span><span class="st st-open"><i aria-hidden="true"></i>Open</span></p>
+      <h1>My fix for #18 was wrong for most of the 40</h1>
+      <p class="e-src">Harborview Bank</p>
+    </header>
+    <section class="qa"><h2>What was wrong</h2><p>The correction applied in #18 — close date = open date + 30 — doesn’t survive a check against another table: most of these accounts kept transacting after their new close date.</p><p class="muted">27 of the 40 corrected accounts have transactions after the new close date (1,436 rows); 12 checking accounts kept paying the fee (239 fees, $1,692).</p></section><section class="qa qa-ev"><h2>Evidence</h2><figure class="e-spec"><div class="sp sp-sens">
+  <p class="sp-cap">Sensitivity test — every key result recalculated without the 40 customers</p>
+  <div class="t-scroll"><table class="dt st-table"><thead><tr><th scope="col">Result</th><th scope="col" class="num">All customers</th><th scope="col" class="num">Without the 40</th><th scope="col" class="num">Change</th></tr></thead><tbody><tr><th scope="row">Customers who left, 2023 to 2025</th><td class="num">3,775</td><td class="num">3,762</td><td class="num">-0.3%</td></tr><tr><th scope="row">Customers who left, Jul 2024 to Dec 2025</th><td class="num">3,044</td><td class="num">3,037</td><td class="num">-0.2%</td></tr><tr><th scope="row">Mass checking closure rate before the change</th><td class="num">0.391% a month</td><td class="num">0.389% a month</td><td class="num">-0.002 points</td></tr><tr><th scope="row">Extra Mass closures, Jul 2024 to Dec 2025</th><td class="num">2,640.7</td><td class="num">2,639.8</td><td class="num">under 0.1%</td></tr><tr><th scope="row">Net effect of the price change</th><td class="num">$742,519</td><td class="num">$741,381</td><td class="num">-0.2%</td></tr></tbody></table></div>
+  <p class="sp-note">No conclusion changes. The dates stay flagged until the source is corrected.</p>
+</div></figure></section><section class="qa"><h2>How it was detected</h2><p>Testing the cleaning assumption against the transactions table.</p></section><section class="qa"><h2>Why it matters</h2><p>Very small: 0.1% of accounts. It explains why fee-paying accounts exceed open Mass checking accounts by 0 to 10 a month.</p></section><section class="qa"><h2>What remains, and what I’d do</h2><div class="fix"><p>Unresolved and still flagged. Recommended fix: set the close date to the end of the month of the last transaction, or treat the account as open if activity continues to December 2025. Every key result was recalculated without the 40 customers: no conclusion changes.</p></div></section><blockquote class="memo"><p>Ask the data owner for the missing November and December 2025 customers and correct the 40 account close dates.</p><footer>CFO memo, recommendation 3 · <a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/04_outputs/CFO_Memo.pdf" target="_blank" rel="noopener">CFO_Memo.pdf ↗</a></footer></blockquote><p class="lesson"><span>Lesson recorded in the project</span>“Test a cleaning assumption against other tables before trusting it (L2).”</p><p class="see">The original fix: <a href="/register/hb-18/">HB-18 · Accounts closed before they were opened</a></p>
+    <section class="qa refs">
+      <h2>References</h2>
+      <dl class="ref-list">
+        <div><dt>File</dt><dd><code>accounts.csv, transactions</code></dd></div>
+        <div><dt>Column</dt><dd><code>close_date</code></dd></div>
+        <div><dt>Layer</dt><dd>Analysis</dd></div>
+        <div><dt>Rows affected</dt><dd>40 of 36,605</dd></div>
+        <div><dt>Status</dt><dd>Unresolved, flagged, and measured.</dd></div>
+        <div><dt>Project</dt><dd><ul><li><a href="/projects/harborview-bank-analysis/">Harborview Bank Power BI Analysis</a></li></ul></dd></div>
+      </dl>
+      <p class="cites-h">Sources in the repositories</p>
+      <ul class="cites"><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/accounts.csv" target="_blank" rel="noopener">accounts.csv (raw file) ↗</a></li><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L130" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 130 ↗</a></li><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L132" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 132 ↗</a></li></ul>
+    </section>
+    <nav class="pager" aria-label="More investigations">
+      <a href="/register/hb-l1/"><span>← HB-L1</span>The customers who stop arriving in November</a>
+      <a href="/register/wh-01/"><span>WH-01 →</span>Spaces before and after customer names</a>
+    </nav>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

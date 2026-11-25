@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HB-32 · Loans that default before they’re issued? None — Abdullah Alhaddad</title>
+<meta name="description" content="HB-32: Loans that default before they’re issued? None. Nothing — a cross-column rule checked and passed.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/register/hb-32/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="HB-32 · Loans that default before they’re issued? None — Abdullah Alhaddad">
+<meta property="og:description" content="HB-32: Loans that default before they’re issued? None. Nothing — a cross-column rule checked and passed.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/register/hb-32/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HB-32 · Loans that default before they’re issued? None — Abdullah Alhaddad">
+<meta name="twitter:description" content="HB-32: Loans that default before they’re issued? None. Nothing — a cross-column rule checked and passed.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Investigations", "item": "https://alhaddad-a.vercel.app/investigations/"}, {"@type": "ListItem", "position": 2, "name": "HB-32", "item": "https://alhaddad-a.vercel.app/register/hb-32/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="entry">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/investigations/">Investigations</a></li><li aria-current="page">HB-32</li></ol></nav>
+    <header class="e-head">
+      <p class="e-meta"><span class="e-id">HB-32</span><span class="st st-clean"><i aria-hidden="true"></i>Checked · clean</span></p>
+      <h1>Loans that default before they’re issued? None</h1>
+      <p class="e-src">Harborview Bank</p>
+    </header>
+    <section class="qa"><h2>What was wrong</h2><p>Nothing — a cross-column rule checked and passed.</p></section><section class="qa qa-ev"><h2>Evidence</h2><figure class="e-spec"><div class="sp sp-clean">
+  <p class="sp-cap">The check <span>loans.csv · default_date, origination_date</span></p>
+  <pre class="q"><code>default_date &lt; origination_date</code></pre>
+  <p class="zero-rows"><span>0</span> rows returned</p>
+</div></figure></section><section class="qa"><h2>How it was detected</h2><p>True/false check column, 0 true</p></section><section class="qa"><h2>Why it matters</h2><p>Same check that caught the 40 accounts (#18), run on loans.</p></section><p class="lesson"><span>Lesson recorded in the project</span>“A clean column is a result too: record &quot;no issues&quot;.”</p>
+    <section class="qa refs">
+      <h2>References</h2>
+      <dl class="ref-list">
+        <div><dt>File</dt><dd><code>loans.csv</code></dd></div>
+        <div><dt>Column</dt><dd><code>default_date, origination_date</code></dd></div>
+        <div><dt>Layer</dt><dd>Power Query</dd></div>
+        <div><dt>Rows affected</dt><dd>0 of 5,300</dd></div>
+        <div><dt>Status</dt><dd>A check that ran and found nothing.</dd></div>
+        <div><dt>Project</dt><dd><ul><li><a href="/projects/harborview-bank-analysis/">Harborview Bank Power BI Analysis</a></li></ul></dd></div>
+      </dl>
+      <p class="cites-h">Sources in the repositories</p>
+      <ul class="cites"><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/loans.csv" target="_blank" rel="noopener">loans.csv (raw file) ↗</a></li><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L76" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 76 ↗</a></li></ul>
+    </section>
+    <nav class="pager" aria-label="More investigations">
+      <a href="/register/hb-41/"><span>← HB-41</span>Missing channel stored as an empty string</a>
+      <a href="/register/hb-l1/"><span>HB-L1 →</span>The customers who stop arriving in November</a>
+    </nav>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

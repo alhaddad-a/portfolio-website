@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HB-19 · Twenty loans listed twice — Abdullah Alhaddad</title>
+<meta name="description" content="HB-19: Twenty loans listed twice. Exact copies of 20 loans.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/register/hb-19/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="HB-19 · Twenty loans listed twice — Abdullah Alhaddad">
+<meta property="og:description" content="HB-19: Twenty loans listed twice. Exact copies of 20 loans.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/register/hb-19/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HB-19 · Twenty loans listed twice — Abdullah Alhaddad">
+<meta name="twitter:description" content="HB-19: Twenty loans listed twice. Exact copies of 20 loans.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Investigations", "item": "https://alhaddad-a.vercel.app/investigations/"}, {"@type": "ListItem", "position": 2, "name": "HB-19", "item": "https://alhaddad-a.vercel.app/register/hb-19/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="entry">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/investigations/">Investigations</a></li><li aria-current="page">HB-19</li></ol></nav>
+    <header class="e-head">
+      <p class="e-meta"><span class="e-id">HB-19</span><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></p>
+      <h1>Twenty loans listed twice</h1>
+      <p class="e-src">Harborview Bank</p>
+    </header>
+    <section class="qa"><h2>What was wrong</h2><p>Exact copies of 20 loans.</p></section><section class="qa qa-ev"><h2>Evidence</h2><figure class="e-spec"><div class="sp sp-count">
+  <p class="sp-cap">Rows in → rows out <span>loans.csv · loan_id</span></p>
+  <div class="ct"><span class="ct-n">5,320</span><span class="arr" aria-hidden="true">→</span><span class="ct-n">5,300</span></div>
+  <p class="sp-note">20 exact copies removed from loan rows. Nothing else is removed at this step.</p>
+</div></figure></section><section class="qa"><h2>How it was detected</h2><p>Count 5,320, distinct 5,300, unique 5,280; Keep Duplicates on all columns returned 40 rows</p></section><section class="qa"><h2>Why it matters</h2><p>Duplicated loans double their balance and, if they default, their loss.</p></section><section class="qa"><h2>What was done</h2><div class="fix"><p>Removed duplicates; 5,300 unique loans.</p></div></section><section class="qa"><h2>How it was verified</h2><p>The quality log records the table’s state after its cleaning steps:</p><blockquote class="result"><p>5,300 loans. Interest rate 0.038 to 0.145, credit score 520 to 850 with 39 unknown, no empty loan amounts (15 calculated and flagged).</p><footer><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L81" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 81 ↗</a></footer></blockquote><p>Every KPI built on it was then reconciled against totals calculated outside Power BI.</p></section>
+    <section class="qa refs">
+      <h2>References</h2>
+      <dl class="ref-list">
+        <div><dt>File</dt><dd><code>loans.csv</code></dd></div>
+        <div><dt>Column</dt><dd><code>loan_id</code></dd></div>
+        <div><dt>Layer</dt><dd>Power Query</dd></div>
+        <div><dt>Rows affected</dt><dd>20 of 5,320</dd></div>
+        <div><dt>Status</dt><dd>Fixed in the pipeline, every time it runs.</dd></div>
+        <div><dt>Project</dt><dd><ul><li><a href="/projects/harborview-bank-analysis/">Harborview Bank Power BI Analysis</a></li></ul></dd></div>
+      </dl>
+      <p class="cites-h">Sources in the repositories</p>
+      <ul class="cites"><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/loans.csv" target="_blank" rel="noopener">loans.csv (raw file) ↗</a></li><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L63" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 63 ↗</a></li></ul>
+    </section>
+    <nav class="pager" aria-label="More investigations">
+      <a href="/register/hb-18/"><span>← HB-18</span>Accounts closed before they were opened</a>
+      <a href="/register/hb-24/"><span>HB-24 →</span>Loan amounts left blank</a>
+    </nav>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

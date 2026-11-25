@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HB-07 · Shouting emails with a trailing space — Abdullah Alhaddad</title>
+<meta name="description" content="HB-07: Shouting emails with a trailing space. Upper case and a trailing space, always on the same rows.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/register/hb-07/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="HB-07 · Shouting emails with a trailing space — Abdullah Alhaddad">
+<meta property="og:description" content="HB-07: Shouting emails with a trailing space. Upper case and a trailing space, always on the same rows.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/register/hb-07/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HB-07 · Shouting emails with a trailing space — Abdullah Alhaddad">
+<meta name="twitter:description" content="HB-07: Shouting emails with a trailing space. Upper case and a trailing space, always on the same rows.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Investigations", "item": "https://alhaddad-a.vercel.app/investigations/"}, {"@type": "ListItem", "position": 2, "name": "HB-07", "item": "https://alhaddad-a.vercel.app/register/hb-07/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="entry">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/investigations/">Investigations</a></li><li aria-current="page">HB-07</li></ol></nav>
+    <header class="e-head">
+      <p class="e-meta"><span class="e-id">HB-07</span><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></p>
+      <h1>Shouting emails with a trailing space</h1>
+      <p class="e-src">Harborview Bank</p>
+    </header>
+    <section class="qa"><h2>What was wrong</h2><p>Upper case and a trailing space, always on the same rows.</p></section><section class="qa qa-ev"><h2>Evidence</h2><figure class="e-spec"><div class="sp sp-chars">
+  <p class="sp-cap">As it arrived <span>customers.csv · email</span></p>
+  <div class="sp-big sp-long"><code class="raw">NOAH.ROSSI5541@MAIL.EXAMPLE<span class="sp"> </span></code><span class="ruler" aria-hidden="true"><span><i>1</i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i>5</i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i>10</i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i>15</i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i>20</i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i>25</i></span><span><i></i></span><span><i></i></span><span><i>28</i></span></span></div>
+  <p class="sp-cap">As it leaves</p>
+  <div class="sp-out"><code class="clean">noah.rossi5541@mail.example</code></div>
+  
+</div></figure></section><section class="qa"><h2>How it was detected</h2><p>Contains &quot;@MAIL&quot; 1,030; ends with a space 1,030</p></section><section class="qa"><h2>Why it matters</h2><p>The same address in two forms breaks uniqueness and any join on email.</p></section><section class="qa"><h2>What was done</h2><div class="fix"><p>Trimmed and lower-cased.</p></div></section><section class="qa"><h2>How it was verified</h2><p>The quality log records the table’s state after its cleaning steps:</p><blockquote class="result"><p>20,000 rows. gender has 2 values, income_band 4, region 5 with none blank, email 20,000 unique, birth_date 104 null, signup_date 0 errors. Every home_branch_id matches a branch.</p><footer><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L41" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 41 ↗</a></footer></blockquote><p>Every KPI built on it was then reconciled against totals calculated outside Power BI.</p></section>
+    <section class="qa refs">
+      <h2>References</h2>
+      <dl class="ref-list">
+        <div><dt>File</dt><dd><code>customers.csv</code></dd></div>
+        <div><dt>Column</dt><dd><code>email</code></dd></div>
+        <div><dt>Layer</dt><dd>Power Query</dd></div>
+        <div><dt>Rows affected</dt><dd>1,030 of 20,120</dd></div>
+        <div><dt>Status</dt><dd>Fixed in the pipeline, every time it runs.</dd></div>
+        <div><dt>Project</dt><dd><ul><li><a href="/projects/harborview-bank-analysis/">Harborview Bank Power BI Analysis</a></li></ul></dd></div>
+      </dl>
+      <p class="cites-h">Sources in the repositories</p>
+      <ul class="cites"><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/01_raw_data/customers.csv" target="_blank" rel="noopener">customers.csv (raw file) ↗</a></li><li><a href="https://github.com/alhaddad-a/harborview-bank-powerbi-analysis/blob/HEAD/02_documentation/02_Data_Quality_Log.md?plain=1#L24" target="_blank" rel="noopener">02_Data_Quality_Log.md, line 24 ↗</a></li></ul>
+    </section>
+    <nav class="pager" aria-label="More investigations">
+      <a href="/register/hb-04/"><span>← HB-04</span>Customers aged 126</a>
+      <a href="/register/hb-08/"><span>HB-08 →</span>Missing region stored as an empty string</a>
+    </nav>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

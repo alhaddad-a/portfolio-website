@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HC-03 · Admissions with no admission date — Abdullah Alhaddad</title>
+<meta name="description" content="HC-03: Admissions with no admission date. The very first admission in the 2021 file has every ID but no date. 105 admissions are like that.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/register/hc-03/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="HC-03 · Admissions with no admission date — Abdullah Alhaddad">
+<meta property="og:description" content="HC-03: Admissions with no admission date. The very first admission in the 2021 file has every ID but no date. 105 admissions are like that.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/register/hc-03/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="HC-03 · Admissions with no admission date — Abdullah Alhaddad">
+<meta name="twitter:description" content="HC-03: Admissions with no admission date. The very first admission in the 2021 file has every ID but no date. 105 admissions are like that.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Investigations", "item": "https://alhaddad-a.vercel.app/investigations/"}, {"@type": "ListItem", "position": 2, "name": "HC-03", "item": "https://alhaddad-a.vercel.app/register/hc-03/"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="entry">
+  <div class="wrap narrow">
+    <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/investigations/">Investigations</a></li><li aria-current="page">HC-03</li></ol></nav>
+    <header class="e-head">
+      <p class="e-meta"><span class="e-id">HC-03</span><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></p>
+      <h1>Admissions with no admission date</h1>
+      <p class="e-src">Healthcare lakehouse</p>
+    </header>
+    <section class="qa"><h2>What was wrong</h2><p>The very first admission in the 2021 file has every ID but no date. 105 admissions are like that.</p><p class="muted">105 of 500,000 admissions across the five yearly files.</p></section><section class="qa qa-ev"><h2>Evidence</h2><figure class="e-spec"><div class="sp sp-quarantine">
+  <p class="sp-cap">As it arrived <span>admissions_2021–2025.csv · admission_date</span></p>
+  <div class="t-scroll"><table class="dt"><thead><tr><th scope="col">admission_id</th><th scope="col">patient_id</th><th scope="col">hospital_id</th><th scope="col">doctor_id</th><th scope="col">procedure_id</th><th scope="col">admission_date</th></tr></thead><tbody><tr><td><code class="raw">1</code></td><td><code class="raw">57399</code></td><td><code class="raw">246</code></td><td><code class="raw">4724</code></td><td><code class="raw">216</code></td><td><code class="raw nil"><span class="nil-t">empty</span></code></td></tr></tbody></table></div>
+  <div class="qz">
+    <div><span class="qz-n">500,000</span><span class="qz-l">rows in</span></div>
+    <div><span class="qz-n">499,895</span><span class="qz-l">to the Silver table</span></div>
+    <div class="qz-aside"><span class="qz-n">105</span><span class="qz-l">set aside in <code>health.silver.admissions_missing_date</code></span></div>
+  </div>
+</div></figure></section><section class="qa"><h2>How it was detected</h2><p>Null-count profile after consolidating the five yearly files.</p></section><section class="qa"><h2>Why it matters</h2><p>An admission without a date can’t be counted in admissions_by_year, but its billing still exists.</p></section><section class="qa"><h2>What was done</h2><div class="fix"><p>The five yearly files are unioned first; rows without a date are written to a separate table.</p><details class="code"><summary>Show the PySpark</summary><pre><code>valid_admissions = admissions.filter(
+    F.col(&quot;admission_date&quot;).isNotNull()
+)
+admissions_missing_date = admissions.filter(
+    F.col(&quot;admission_date&quot;).isNull()
+)</code></pre></details></div></section>
+    <section class="qa refs">
+      <h2>References</h2>
+      <dl class="ref-list">
+        <div><dt>File</dt><dd><code>admissions_2021–2025.csv</code></dd></div>
+        <div><dt>Column</dt><dd><code>admission_date</code></dd></div>
+        <div><dt>Layer</dt><dd>Bronze → Silver</dd></div>
+        <div><dt>Rows affected</dt><dd>105 of 500,000</dd></div>
+        <div><dt>Status</dt><dd>Fixed in the pipeline, every time it runs.</dd></div>
+        <div><dt>Project</dt><dd><ul><li><a href="/projects/healthcare-lakehouse/">Healthcare Lakehouse on Databricks</a></li></ul></dd></div>
+      </dl>
+      <p class="cites-h">Sources in the repositories</p>
+      <ul class="cites"><li><a href="https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/datasets/ehr/admissions_2021.csv" target="_blank" rel="noopener">admissions_2021.csv (raw file) ↗</a></li><li><a href="https://github.com/alhaddad-a/healthcare-lakehouse-databricks/blob/HEAD/scripts/silver/ehr/admissions.ipynb" target="_blank" rel="noopener">admissions.ipynb ↗</a></li></ul>
+    </section>
+    <nav class="pager" aria-label="More investigations">
+      <a href="/register/hc-02/"><span>← HC-02</span>Patients with no city — kept, but set aside</a>
+      <a href="/register/hc-04/"><span>HC-04 →</span>Money with fifteen decimal places</a>
+    </nav>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>

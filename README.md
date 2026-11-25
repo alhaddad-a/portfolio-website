@@ -6,31 +6,46 @@ A fast, **fully static** site. Every page is plain HTML with all content inside 
 so search engines can read it without running JavaScript.
 
 ```
-build.py              ← ALL content lives here (about, projects, certificates, contact)
+build.py              ← site settings, project write-ups, certificates, and all rendering
+content/register.json ← every data investigation, with counts and citations
+tools/                ← scripts that re-derive every count from the public project repos
 public/               ← the website that gets deployed
-  index.html            homepage (generated)
-  projects/*/index.html one case-study page per project (generated)
-  404.html              real 404 page (generated)
-  sitemap.xml           (generated, dates update on every build)
-  robots.txt            (generated)
-  assets/css/style.css  design system (light + dark)
-  assets/js/main.js     theme toggle + mobile menu only
-  assets/img/           optimized photo, share image, icons
-  .well-known/security.txt  security contact (generated)
+  index.html            homepage: who I am + the four projects (generated)
+  projects/             projects showcase + one case study per project (URLs unchanged)
+  investigations/       the list of data investigations, filterable (generated)
+  register/*/           one page per investigation (generated)
+  about/, certificates/, contact/, 404.html, sitemap.xml, robots.txt (generated)
+  assets/css/style.css  the whole design
+  assets/js/main.js     investigation filters only (the site works without JS)
+  assets/img/           photo, project images, share image, icons
 vercel.json           ← hosting config: security headers, caching, redirects
-source-assets/        original full-size photo (not deployed)
 ```
+
+## Design
+
+A simple personal portfolio: projects first, technical depth only when the visitor asks for it.
+
+- **Look.** Warm cream paper, dark ink, Source Serif 4 headlines, system sans for reading,
+  IBM Plex Mono only for data values, file names and code. One muted yellow accent; thin rules, no cards-everywhere.
+- **Homepage.** Name, role, one headline, two sentences, then the four projects with real previews
+  (star schema, notebook stages, the repo's data-flow diagram, a report screenshot).
+- **Case studies.** Intro → architecture → what I built → results → technologies, with each project
+  laid out for its own material. SQL, tables and long write-ups sit in expandable
+  "Evidence and technical details" sections. Nothing was deleted, only tucked away.
+- **Investigations.** A secondary page: ID, raw value, title, project and status, six shown at first.
+  Each entry page reads as a short case study: what was wrong, evidence, detection, impact, fix, verification, references.
 
 ## Editing content
 
-1. Open `build.py` and edit the CONTENT section (text, projects, certificates, links).
+1. Register entries: edit `content/register.json`, or regenerate it with `tools/` (see `tools/README.md`).
+   Everything else: edit the CONTENT section of `build.py`.
 2. Run `python build.py` (Python 3.8+, no packages needed).
 3. Commit and push. Vercel redeploys automatically.
 
 > Don't edit the generated `.html` files by hand. The next build overwrites them.
 
-To add a project, copy one entry in `PROJECTS`. It automatically gets its own page,
-a homepage card, a diagram, and a sitemap entry.
+To add a project: add an entry to `PROJECTS`, `CARDS`, `INTROS` and `SHORT`, a `profile_N()` function,
+a case in `preview()`, and any investigations to the register.
 
 Preview locally: `cd public && python -m http.server 8000` → <http://localhost:8000>
 

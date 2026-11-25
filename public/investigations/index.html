@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Investigations — Abdullah Alhaddad, Data Engineer</title>
+<meta name="description" content="46 real data quality problems found in my four projects, each with the evidence, the fix and how it was verified.">
+<meta name="author" content="Abdullah Alhaddad">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://alhaddad-a.vercel.app/investigations/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Abdullah Alhaddad">
+<meta property="og:title" content="Investigations — Abdullah Alhaddad, Data Engineer">
+<meta property="og:description" content="46 real data quality problems found in my four projects, each with the evidence, the fix and how it was verified.">
+<meta property="og:url" content="https://alhaddad-a.vercel.app/investigations/">
+<meta property="og:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Abdullah Alhaddad, Data Engineer">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Investigations — Abdullah Alhaddad, Data Engineer">
+<meta name="twitter:description" content="46 real data quality problems found in my four projects, each with the evidence, the fix and how it was verified.">
+<meta name="twitter:image" content="https://alhaddad-a.vercel.app/assets/img/og-image.jpg">
+<meta name="theme-color" content="#f4f3ee">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="preload" href="/assets/fonts/source-serif-4-vf-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/ibm-plex-mono-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/style.css?v=5260af01b3">
+<script src="/assets/js/theme.js?v=50f1b451e3"></script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "CollectionPage", "url": "https://alhaddad-a.vercel.app/investigations/", "name": "Data Quality Investigations — Abdullah Alhaddad", "mainEntity": {"@id": "https://alhaddad-a.vercel.app/#person"}}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site-head">
+  <div class="wrap head-row">
+    <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">AA</span><span class="brand-name">Abdullah Alhaddad</span></a>
+    <nav aria-label="Main"><ul class="nav"><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li><a href="/about/">About</a></li><li><a href="/investigations/" aria-current="page">Investigations</a></li><li><a href="/certificates/">Certificates</a></li><li><a href="/contact/">Contact</a></li></ul></nav>
+  </div>
+</header>
+<main id="main" class="inv-page">
+  <div class="wrap">
+    <header class="page-head">
+      <h1>Investigations</h1>
+      <p>Real data problems I found in my projects. Open any one to see the evidence, the fix and how it was checked.</p>
+    </header>
+    <section id="register" aria-label="Investigations">
+      <div class="filters" role="search" aria-label="Filter investigations">
+  <label><span>Project</span><select id="f-case"><option value="">All projects</option><option value="1">SQL Server Data Warehouse</option><option value="2">Databricks Medallion Pipeline</option><option value="3">Healthcare Lakehouse</option><option value="4">Harborview Bank Analytics</option></select></label>
+  <label><span>Status</span><select id="f-status"><option value="">Any status</option><option value="resolved">Resolved</option><option value="clean">Checked · clean</option><option value="reopened">Reopened</option><option value="open">Open</option><option value="limitation">Known limitation</option></select></label>
+  <p class="f-count" aria-live="polite">Showing <span data-count>46</span> of 46</p>
+  <button type="button" class="f-reset" hidden>Clear filters</button>
+</div>
+      <ol class="iv-list" id="r-list" data-preview="6"><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-01/">
+    <span class="iv-id">WH-01</span>
+    <span class="iv-raw"><code class="raw"><span class="sp"> </span>Jon</code></span>
+    <span class="iv-title">Spaces before and after customer names</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-15/">
+    <span class="iv-id">WH-15</span>
+    <span class="iv-raw"><code class="raw">M<span class="sp"> </span></code></span>
+    <span class="iv-title">Nine spellings of two genders</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="3" data-status="resolved">
+  <a href="/register/hc-04/">
+    <span class="iv-id">HC-04</span>
+    <span class="iv-raw"><code class="raw">6585.389999999999</code></span>
+    <span class="iv-title">Money with fifteen decimal places</span>
+    <span class="iv-proj">Healthcare lakehouse</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-04/">
+    <span class="iv-id">HB-04</span>
+    <span class="iv-raw"><code class="raw">1900-01-01</code></span>
+    <span class="iv-title">Customers aged 126</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-12/">
+    <span class="iv-id">HB-12</span>
+    <span class="iv-raw"><code class="raw">17/12/2022</code></span>
+    <span class="iv-title">Two date formats in one column</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="3" data-status="clean">
+  <a href="/register/hc-05/">
+    <span class="iv-id">HC-05</span>
+    <span class="iv-raw"><span class="zero-cell">0 rows returned</span></span>
+    <span class="iv-title">Do the payments add up? Checked: yes</span>
+    <span class="iv-proj">Healthcare lakehouse</span>
+    <span class="iv-st"><span class="st st-clean"><i aria-hidden="true"></i>Checked · clean</span></span>
+  </a>
+</li><li class="iv" data-src="1" data-status="resolved">
+  <a href="/register/wh-02/">
+    <span class="iv-id">WH-02</span>
+    <span class="iv-raw"><code class="raw">29433</code></span>
+    <span class="iv-title">One customer, two records</span>
+    <span class="iv-proj">SQL Server warehouse</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-03/">
+    <span class="iv-id">WH-03</span>
+    <span class="iv-raw"><code class="raw nil"><span class="nil-t">empty</span></code></span>
+    <span class="iv-title">Customer rows with no customer ID</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-04/">
+    <span class="iv-id">WH-04</span>
+    <span class="iv-raw"><code class="raw">S</code></span>
+    <span class="iv-title">Marital status stored as one-letter codes</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-05/">
+    <span class="iv-id">WH-05</span>
+    <span class="iv-raw"><code class="raw nil"><span class="nil-t">empty</span></code></span>
+    <span class="iv-title">Gender missing in a quarter of CRM customers</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-06/">
+    <span class="iv-id">WH-06</span>
+    <span class="iv-raw"><code class="raw">CO-RF-FR-R92B-58</code></span>
+    <span class="iv-title">Two keys packed into one product key</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-07/">
+    <span class="iv-id">WH-07</span>
+    <span class="iv-raw"><code class="raw">R<span class="sp"> </span></code></span>
+    <span class="iv-title">Product line codes with a trailing space</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-08/">
+    <span class="iv-id">WH-08</span>
+    <span class="iv-raw"><code class="raw nil"><span class="nil-t">empty</span></code></span>
+    <span class="iv-title">Products with no cost</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1" data-status="resolved">
+  <a href="/register/wh-09/">
+    <span class="iv-id">WH-09</span>
+    <span class="iv-raw"><code class="raw">2011-07-01 → 2007-12-28</code></span>
+    <span class="iv-title">Products that end before they start</span>
+    <span class="iv-proj">SQL Server warehouse</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-10/">
+    <span class="iv-id">WH-10</span>
+    <span class="iv-raw"><code class="raw">20101229</code></span>
+    <span class="iv-title">Order dates stored as integers — some of them not dates</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1" data-status="resolved">
+  <a href="/register/wh-11/">
+    <span class="iv-id">WH-11</span>
+    <span class="iv-raw"><code class="raw">35 = 2 × 35</code></span>
+    <span class="iv-title">Sales amounts that don’t equal quantity × price</span>
+    <span class="iv-proj">SQL Server warehouse</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-12/">
+    <span class="iv-id">WH-12</span>
+    <span class="iv-raw"><code class="raw">-769</code></span>
+    <span class="iv-title">Prices missing or negative</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-13/">
+    <span class="iv-id">WH-13</span>
+    <span class="iv-raw"><code class="raw"><del>NAS</del>AW00011000</code></span>
+    <span class="iv-title">ERP customer keys with a three-letter prefix</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-14/">
+    <span class="iv-id">WH-14</span>
+    <span class="iv-raw"><code class="raw">11/20/9999</code></span>
+    <span class="iv-title">Customers born in the future</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-16/">
+    <span class="iv-id">WH-16</span>
+    <span class="iv-raw"><code class="raw">AW<del>-</del>00011000</code></span>
+    <span class="iv-title">A hyphen in every location key</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1 2" data-status="resolved">
+  <a href="/register/wh-17/">
+    <span class="iv-id">WH-17</span>
+    <span class="iv-raw"><code class="raw">USA</code></span>
+    <span class="iv-title">One country, three spellings</span>
+    <span class="iv-proj">SQL Server warehouse · Databricks pipeline</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="1" data-status="clean">
+  <a href="/register/wh-18/">
+    <span class="iv-id">WH-18</span>
+    <span class="iv-raw"><span class="zero-cell">0 rows returned</span></span>
+    <span class="iv-title">Category table: checked, nothing to fix</span>
+    <span class="iv-proj">SQL Server warehouse</span>
+    <span class="iv-st"><span class="st st-clean"><i aria-hidden="true"></i>Checked · clean</span></span>
+  </a>
+</li><li class="iv" data-src="3" data-status="resolved">
+  <a href="/register/hc-01/">
+    <span class="iv-id">HC-01</span>
+    <span class="iv-raw"><code class="raw">1,M,</code></span>
+    <span class="iv-title">A hundred patients listed twice</span>
+    <span class="iv-proj">Healthcare lakehouse</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="3" data-status="resolved">
+  <a href="/register/hc-02/">
+    <span class="iv-id">HC-02</span>
+    <span class="iv-raw"><code class="raw nil"><span class="nil-t">empty</span></code></span>
+    <span class="iv-title">Patients with no city — kept, but set aside</span>
+    <span class="iv-proj">Healthcare lakehouse</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="3" data-status="resolved">
+  <a href="/register/hc-03/">
+    <span class="iv-id">HC-03</span>
+    <span class="iv-raw"><code class="raw">1,57399,246,4724,216,</code></span>
+    <span class="iv-title">Admissions with no admission date</span>
+    <span class="iv-proj">Healthcare lakehouse</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="3" data-status="clean">
+  <a href="/register/hc-06/">
+    <span class="iv-id">HC-06</span>
+    <span class="iv-raw"><span class="zero-cell">0 rows returned</span></span>
+    <span class="iv-title">Business keys across ten yearly files: unique</span>
+    <span class="iv-proj">Healthcare lakehouse</span>
+    <span class="iv-st"><span class="st st-clean"><i aria-hidden="true"></i>Checked · clean</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-02/">
+    <span class="iv-id">HB-02</span>
+    <span class="iv-raw"><code class="raw">C10200 ×2</code></span>
+    <span class="iv-title">120 customers copied whole</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-03/">
+    <span class="iv-id">HB-03</span>
+    <span class="iv-raw"><code class="raw">FEMALE</code></span>
+    <span class="iv-title">Eight versions of two values</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-07/">
+    <span class="iv-id">HB-07</span>
+    <span class="iv-raw"><code class="raw">NOAH.ROSSI5541@MAIL.EXAMPLE<span class="sp"> </span></code></span>
+    <span class="iv-title">Shouting emails with a trailing space</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-08/">
+    <span class="iv-id">HB-08</span>
+    <span class="iv-raw"><code class="raw nil"><span class="nil-t">empty</span></code></span>
+    <span class="iv-title">Missing region stored as an empty string</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-11/">
+    <span class="iv-id">HB-11</span>
+    <span class="iv-raw"><code class="raw">Hgh</code></span>
+    <span class="iv-title">Hgh</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-01/">
+    <span class="iv-id">HB-01</span>
+    <span class="iv-raw"><code class="raw">CLOSED</code></span>
+    <span class="iv-title">Four spellings of open and closed</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="reopened">
+  <a href="/register/hb-18/">
+    <span class="iv-id">HB-18</span>
+    <span class="iv-raw"><code class="raw">2019-02-09 → 2019-01-10</code></span>
+    <span class="iv-title">Accounts closed before they were opened</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-reopened"><i aria-hidden="true"></i>Reopened</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-19/">
+    <span class="iv-id">HB-19</span>
+    <span class="iv-raw"><code class="raw">L00079 ×2</code></span>
+    <span class="iv-title">Twenty loans listed twice</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-24/">
+    <span class="iv-id">HB-24</span>
+    <span class="iv-raw"><code class="raw nil"><span class="nil-t">empty</span></code></span>
+    <span class="iv-title">Loan amounts left blank</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-25/">
+    <span class="iv-id">HB-25</span>
+    <span class="iv-raw"><code class="raw">9.96</code></span>
+    <span class="iv-title">Rates stored as percentages</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-28/">
+    <span class="iv-id">HB-28</span>
+    <span class="iv-raw"><code class="raw">999</code></span>
+    <span class="iv-title">Credit scores of 0 and 999</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-34/">
+    <span class="iv-id">HB-34</span>
+    <span class="iv-raw"><code class="raw">T00000320 ×2</code></span>
+    <span class="iv-title">9,279 transactions listed twice</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-35/">
+    <span class="iv-id">HB-35</span>
+    <span class="iv-raw"><code class="raw">A945569</code></span>
+    <span class="iv-title">Transactions on accounts that don’t exist</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-36/">
+    <span class="iv-id">HB-36</span>
+    <span class="iv-raw"><code class="raw">2026-03-02 00:00:00</code></span>
+    <span class="iv-title">Transactions from the future</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-38/">
+    <span class="iv-id">HB-38</span>
+    <span class="iv-raw"><code class="raw">retail<span class="sp"> </span><span class="sp"> </span></code></span>
+    <span class="iv-title">34 categories that are really 17</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-39/">
+    <span class="iv-id">HB-39</span>
+    <span class="iv-raw"><code class="raw">-22.75</code></span>
+    <span class="iv-title">Direction stored twice</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="resolved">
+  <a href="/register/hb-41/">
+    <span class="iv-id">HB-41</span>
+    <span class="iv-raw"><code class="raw nil"><span class="nil-t">empty</span></code></span>
+    <span class="iv-title">Missing channel stored as an empty string</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-resolved"><i aria-hidden="true"></i>Resolved</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="clean">
+  <a href="/register/hb-32/">
+    <span class="iv-id">HB-32</span>
+    <span class="iv-raw"><span class="zero-cell">0 rows returned</span></span>
+    <span class="iv-title">Loans that default before they’re issued? None</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-clean"><i aria-hidden="true"></i>Checked · clean</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="limitation">
+  <a href="/register/hb-l1/">
+    <span class="iv-id">HB-L1</span>
+    <span class="iv-raw"><code class="raw">7 · 3</code></span>
+    <span class="iv-title">The customers who stop arriving in November</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-limitation"><i aria-hidden="true"></i>Known limitation</span></span>
+  </a>
+</li><li class="iv" data-src="4" data-status="open">
+  <a href="/register/hb-l2/">
+    <span class="iv-id">HB-L2</span>
+    <span class="iv-raw"><code class="raw">close_date = open_date + 30</code></span>
+    <span class="iv-title">My fix for #18 was wrong for most of the 40</span>
+    <span class="iv-proj">Harborview Bank</span>
+    <span class="iv-st"><span class="st st-open"><i aria-hidden="true"></i>Open</span></span>
+  </a>
+</li></ol>
+      <p class="r-empty" hidden>Nothing matches these filters.</p>
+      <p class="r-more-wrap" hidden><button type="button" class="btn btn-line" data-show-all>View all 46 investigations</button></p>
+    </section>
+  </div>
+</main>
+<footer class="site-foot">
+  <div class="wrap foot-row">
+    <p class="foot-id"><strong>Abdullah Alhaddad</strong><span>Data Engineer · Ankara, Türkiye</span></p>
+    <ul class="foot-links">
+      <li><a href="mailto:alhaddad.a.hani@gmail.com">Email</a></li>
+      <li><a href="https://www.linkedin.com/in/abdullah-alhaddad-76a101344/" target="_blank" rel="me noopener">LinkedIn</a></li>
+      <li><a href="https://github.com/alhaddad-a" target="_blank" rel="me noopener">GitHub</a></li>
+      <li><a href="https://wa.me/905352316686?text=Hello%20Abdullah%2C%20I%20saw%20your%20portfolio%20and%20would%20like%20to%20get%20in%20touch." target="_blank" rel="noopener">WhatsApp</a></li>
+    </ul>
+  </div>
+  <div class="wrap"><p class="foot-small">© 2026 Abdullah Alhaddad</p></div>
+</footer>
+<script src="/assets/js/main.js?v=49cc3c5677" defer></script>
+</body>
+</html>
